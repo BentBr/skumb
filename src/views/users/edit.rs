@@ -8,18 +8,16 @@ use crate::json_serialization::user::password_user_item::PasswordUserItem;
 use crate::json_serialization::user::user_item::UserItem;
 use crate::jwt::JwToken;
 use crate::models::user::item::{edit_item, update_password};
-use actix_web::{web, HttpRequest};
-use lambda_http::{Body, Response};
+use actix_web::{web, HttpRequest, HttpResponse};
 use sentry::Level;
 use uuid::Uuid;
-use crate::json_serialization::response::json_response::JsonResponse;
 
 pub async fn edit(
     user_item: web::Json<EditUserItem>,
     request: HttpRequest,
     db: DB,
     _: JwToken,
-) -> Response<Body> {
+) -> HttpResponse {
     let uuid: Uuid = match parse_uuid_from_request(request) {
         Err(response) => return response,
         Ok(valid_uuid) => valid_uuid,
@@ -48,20 +46,20 @@ pub async fn edit(
     );
 
     match item.first() {
-        Some(item) => JsonResponse::new(200, ResponseItem::new(
+        Some(item) => HttpResponse::Ok().json(ResponseItem::new(
             ResponseStatus::Success,
             "Updated user".to_string(),
             UserItem::new(item.clone()),
-        ))?,
+        )),
         None => {
             // Logging a bit
             sentry::capture_message("Editing and lookup of changed user failed!", Level::Error);
 
-            JsonResponse::new(404, ResponseItem::new(
+            HttpResponse::NotFound().json(ResponseItem::new(
                 ResponseStatus::Error,
                 "User not found for".to_string(),
                 user_item,
-            ))?
+            ))
         }
     }
 }
@@ -72,7 +70,7 @@ pub async fn password(
     db: DB,
     db2: DB,
     _: JwToken,
-) -> Response<Body> {
+) -> HttpResponse {
     let uuid: Uuid = match parse_uuid_from_request(request) {
         Err(response) => return response,
         Ok(valid_uuid) => valid_uuid,
@@ -81,26 +79,26 @@ pub async fn password(
     let old_password = String::from(&user_item.old_password);
     let new_password = String::from(&user_item.new_password);
     if new_password.is_empty() {
-        return JsonResponse::new(422, ResponseItem::new(
+        return HttpResponse::UnprocessableEntity().json(ResponseItem::new(
             ResponseStatus::Error,
             "Password constraint".to_string(),
             "New password must not be empty",
-        ))?;
+        ));
     }
 
     // Editing in DB
     let item = update_password(uuid, old_password, new_password, db, db2);
 
     match item {
-        Some(user) => JsonResponse::new(200, ResponseItem::new(
+        Some(user) => HttpResponse::Ok().json(ResponseItem::new(
             ResponseStatus::Success,
             "Updated user password".to_string(),
             UserItem::new(user),
-        ))?,
-        None => JsonResponse::new(409, ResponseItem::new(
+        )),
+        None => HttpResponse::Conflict().json(ResponseItem::new(
             ResponseStatus::Error,
             "User not found or password wrong".to_string(),
             user_item,
-        ))?,
+        )),
     }
 }

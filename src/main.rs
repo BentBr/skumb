@@ -7,14 +7,10 @@ mod schema;
 mod views;
 
 use crate::helpers::env::get_float_from_env;
-use crate::views::function_handler;
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
-use futures::future;
-use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
-use serde_json::json;
-use std::env;
+use std::{env};
 
 fn create_sentry() {
     let sentry_dsn: String = env::var("SENTRY_DSN").expect("SENTRY_DSN not set");
@@ -32,10 +28,26 @@ fn create_sentry() {
 }
 
 #[actix_web::main]
-async fn main() -> Result<(), Error> {
-    tracing::init_default_subscriber();
-
+async fn main() -> std::io::Result<()> {
     create_sentry();
 
-    run(service_fn(function_handler)).await
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
+    HttpServer::new( || {
+        // Handling CORS issues
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_header()
+            .allow_any_method();
+
+        // Returning the app
+        App::new()
+            .configure(views::views_factory)
+            .wrap(cors)
+            .wrap(Logger::new("%a %{User-Agent}i %r %s %D"))
+    })
+    .bind("0.0.0.0:9123")?
+    .workers(1)
+    .run()
+    .await
 }

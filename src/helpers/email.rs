@@ -1,10 +1,9 @@
 use crate::json_serialization::response::response_item::ResponseItem;
 use crate::json_serialization::response::response_status::ResponseStatus;
-use lambda_http::{Body, Response};
+use actix_web::HttpResponse;
 use regex::Regex;
-use crate::json_serialization::response::json_response::JsonResponse;
 
-pub fn parse_email_from_string(email: String) -> Result<String, Response<Body>> {
+pub fn parse_email_from_string(email: String) -> Result<String, HttpResponse> {
     // Remember to use the same here as for the database constraint (users table)
     // See 2024-03-30-223226_user_email_constraint
     let email_regex =
@@ -19,14 +18,11 @@ pub fn parse_email_from_string(email: String) -> Result<String, Response<Body>> 
                 return Ok(email.clone());
             }
 
-            Err(JsonResponse::new(
-                422,
-                ResponseItem::new(
-                    ResponseStatus::Error,
-                    "Email format error".to_string(),
-                    format!("Email '{}' is not a proper email format", email),
-                ),
-            )?)
+            Err(HttpResponse::UnprocessableEntity().json(ResponseItem::new(
+                ResponseStatus::Error,
+                "Email format error".to_string(),
+                format!("Email '{}' is not a proper email format", email),
+            )))
         }
     }
 }
