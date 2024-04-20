@@ -1,4 +1,5 @@
 use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
+use serde_json::json;
 
 /// This is the main body for the function.
 /// Write your code inside it.
@@ -17,7 +18,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let resp = Response::builder()
         .status(200)
         .header("content-type", "application/json")
-        .body(message.into())
+        .body(json!(message).to_string().into())
         .map_err(Box::new)?;
     Ok(resp)
 }

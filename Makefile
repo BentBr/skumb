@@ -7,6 +7,7 @@ help:
 		@echo "  \033[32m stop \033[39m               Stops the setup"
 		@echo "  \033[32m build \033[39m              Rebuilds the setup"
 		@echo "  \033[32m volume_prune \033[39m       Removing all volumes and downing the project"
+		@echo "  \033[32m deploy \033[39m       	  Deploying lambda"
 		@echo "  \033[32m migration_up \033[39m       Running diesel migrations"
 		@echo "  \033[32m migration_redo \033[39m     Running diesel migrations down + up"
 		@echo "  \033[32m readme \033[39m             Shows some help"
@@ -27,6 +28,10 @@ build:
 
 volume_prune:
 	docker-compose down -v
+
+deploy:
+	cargo lambda build --release
+	cargo lambda deploy -p rust -r eu-central-1
 
 migration_up:
 	diesel migration run
