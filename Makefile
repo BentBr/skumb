@@ -1,9 +1,13 @@
+# Making sure to have a local environment (will be loaded with cargo lambda watch via start)
+include .env
+export
+
 default: help
 
 help:
 		@echo "Please use \033[32mmake \033[32m<target>\033[39m where <target> is one of"
 		@echo "  \033[32m help \033[39m               Shows this help"
-		@echo "  \033[32m start \033[39m              Start the setup with node server"
+		@echo "  \033[32m start \033[39m              Start the setup with node, postgres, redis and rust lambda watch"
 		@echo "  \033[32m stop \033[39m               Stops the setup"
 		@echo "  \033[32m build \033[39m              Rebuilds the setup"
 		@echo "  \033[32m volume_prune \033[39m       Removing all volumes and downing the project"
@@ -19,6 +23,7 @@ list:
 
 start:
 	docker-compose up -d
+	cargo lambda watch --env-vars SENTRY_DSN=$(SENTRY_DSN),SENTRY_SAMPLE_RATE=$(SENTRY_SAMPLE_RATE),DATABASE_URL=$(DATABASE_URL),MAX_DATABASE_CONNECTIONS=$(MAX_DATABASE_CONNECTIONS),APP_SECRET=$(APP_SECRET),SESSION_LIFETIME=$(SESSION_LIFETIME),REDIS_DSN=$(REDIS_DSN)
 
 stop:
 	docker-compose down
@@ -34,10 +39,10 @@ deploy:
 	cargo lambda deploy -p rust -r eu-central-1
 
 migration_up:
-	diesel migration run
+	DATABASE_URL=$(DATABASE_URL) MAX_DATABASE_CONNECTIONS=$(MAX_DATABASE_CONNECTIONS) diesel migration run
 
 migration_redo:
-	diesel migration redo
+	DATABASE_URL=$(DATABASE_URL) MAX_DATABASE_CONNECTIONS=$(MAX_DATABASE_CONNECTIONS) diesel migration redo
 
 readme:
 	@echo "\033[32m cargo run\033[39m to run the (rust) server"
