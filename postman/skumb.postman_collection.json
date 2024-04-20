@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "fdeb25d9-e7f6-4bd2-a278-6014df09ec6b",
+		"name": "skumb",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30093745"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "auth",
+					"item": []
+				}
+			]
+		},
+		{
+			"name": "test base aws",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://9hzofcbnk1.execute-api.eu-central-1.amazonaws.com/test/?name=moinsen",
+					"protocol": "https",
+					"host": [
+						"9hzofcbnk1",
+						"execute-api",
+						"eu-central-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"test",
+						""
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "moinsen"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test base local",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9000?name=moinsen",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"query": [
+						{
+							"key": "name",
+							"value": "moinsen"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

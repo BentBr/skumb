@@ -1,0 +1,40 @@
+services:
+    node:
+        image: node:20-alpine
+        command: sh -c "cd /var/www/html/ && npm run dev && tail -f /dev/null" # preventing it from stopping again
+        volumes:
+            - ./fe:/var/www/html
+        working_dir: /var/www/html/
+        ports:
+            - '80'
+        networks:
+            default:
+                aliases:
+                    - skumb.docker
+        environment:
+            - VIRTUAL_HOST=.skumb.docker
+
+    postgres:
+        image: 'postgres:11.2'
+        ports:
+            - '5432:5432'
+        environment:
+            - 'POSTGRES_USER=username'
+            - 'POSTGRES_DB=skumb'
+            - 'POSTGRES_PASSWORD=password'
+            - VIRTUAL_HOST=.pg-skumb.docker
+        networks:
+            default:
+                aliases:
+                    - pg-skumb.docker
+
+    redis:
+        image: 'redis:5.0.5'
+        ports:
+            - '6379:6379'
+        networks:
+            default:
+                aliases:
+                    - redis-skumb.docker
+        environment:
+            - VIRTUAL_HOST=.redis-skumb.docker
