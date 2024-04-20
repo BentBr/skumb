@@ -9,7 +9,7 @@ pub struct NewUserItem {
 }
 
 impl NewUserItem {
-    pub fn new(input_item: User) -> NewUserItem {
+    pub fn _new(input_item: User) -> NewUserItem {
         NewUserItem {
             username: input_item.username.to_owned(),
             email: input_item.email.to_owned(),
@@ -39,7 +39,7 @@ mod new_user_item_tests {
             deletion_date: None,
         };
 
-        let new_user_item = NewUserItem::new(user);
+        let new_user_item = NewUserItem::_new(user);
 
         assert_eq!(new_user_item.username, "john doe");
         assert_eq!(new_user_item.email, "john@example.com");

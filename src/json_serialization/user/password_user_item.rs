@@ -9,7 +9,7 @@ pub struct PasswordUserItem {
 }
 
 impl PasswordUserItem {
-    pub fn new(input_item: PasswordUser) -> PasswordUserItem {
+    pub fn _new(input_item: PasswordUser) -> PasswordUserItem {
         PasswordUserItem {
             uuid: input_item.uuid.to_string(),
             old_password: input_item.password.to_owned(),
@@ -33,7 +33,7 @@ mod password_user_item_tests {
             password: "old_password".to_string(),
         };
 
-        let password_user_item = PasswordUserItem::new(password_user);
+        let password_user_item = PasswordUserItem::_new(password_user);
 
         assert_eq!(password_user_item.uuid, uuid.to_string());
         assert_eq!(password_user_item.old_password, "old_password");

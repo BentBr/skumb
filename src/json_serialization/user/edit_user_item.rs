@@ -12,7 +12,7 @@ pub struct EditUserItem {
 }
 
 impl EditUserItem {
-    pub fn new(input_item: User) -> EditUserItem {
+    pub fn _new(input_item: User) -> EditUserItem {
         EditUserItem {
             uuid: input_item.uuid.to_string(),
             username: input_item.username.to_owned(),
@@ -47,7 +47,7 @@ mod edit_user_item_tests {
             deletion_date: None,
         };
 
-        let edit_item = EditUserItem::new(test_user);
+        let edit_item = EditUserItem::_new(test_user);
 
         assert_eq!(edit_item.uuid, uuid.to_string());
         assert_eq!(edit_item.username, "john_doe");

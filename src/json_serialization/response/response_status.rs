@@ -15,7 +15,7 @@ impl ResponseStatus {
         }
     }
 
-    pub fn from_string(input_string: String) -> Self {
+    pub fn _from_string(input_string: String) -> Self {
         match input_string.as_str() {
             "Success" => Self::Success,
             "Error" => Self::Error,
@@ -61,11 +61,11 @@ mod response_status_tests {
         let error_string = "Error".to_string();
 
         assert_eq!(
-            ResponseStatus::from_string(success_string),
+            ResponseStatus::_from_string(success_string),
             ResponseStatus::Success
         );
         assert_eq!(
-            ResponseStatus::from_string(error_string),
+            ResponseStatus::_from_string(error_string),
             ResponseStatus::Error
         );
     }
@@ -75,7 +75,7 @@ mod response_status_tests {
     fn from_string_panic() {
         let not_existing_status_string = "fail".to_string();
 
-        ResponseStatus::from_string(not_existing_status_string);
+        ResponseStatus::_from_string(not_existing_status_string);
     }
 
     #[test]
