@@ -122,7 +122,7 @@ mod tests {
     use super::{get_session_lifetime, JwToken, UnauthorizedError};
     use actix_web::dev::Payload;
     use actix_web::http::header::{HeaderName, HeaderValue};
-    use actix_web::{test, FromRequest, ResponseError};
+    use actix_web::{http, test, FromRequest, ResponseError};
     use chrono::Utc;
     use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
     use std::env;

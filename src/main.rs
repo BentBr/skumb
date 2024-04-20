@@ -10,7 +10,7 @@ use crate::helpers::env::get_float_from_env;
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
-use std::{env};
+use std::env;
 
 fn create_sentry() {
     let sentry_dsn: String = env::var("SENTRY_DSN").expect("SENTRY_DSN not set");
@@ -33,7 +33,7 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    HttpServer::new( || {
+    HttpServer::new(|| {
         // Handling CORS issues
         let cors = Cors::default()
             .allow_any_origin()
