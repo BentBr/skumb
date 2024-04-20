@@ -30,6 +30,7 @@ jobs:
             - name: Release lambda
               run: |
                   pip install cargo-lambda
+                  apt-get install libssl-dev -y
                   cargo lambda build --release
                   cargo lambda deploy skumb
               env:
