@@ -1,3 +1,11 @@
+## Local setup and installation
+### Rust
+### Diesel
+### Docker (compose)
+### AWS CLI
+### Cargo Lambda
+
+
 Run
 `cargo lambda watch`
 

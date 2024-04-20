@@ -1,14 +1,10 @@
 name: Build release and deploy
 on:
-    push:
-        branches: [ "main" ]
-    pull_request:
-        branches: [ "main" ]
     workflow_run:
-      workflows: ["Test Code"]
-      branches: [main]
-      types:
-        - completed
+        workflows: ["Test Code"]
+        branches: [main]
+        types:
+          - completed
 env:
     CARGO_TERM_COLOR: always
 jobs:
