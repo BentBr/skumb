@@ -13,6 +13,7 @@ services:
                     - skumb.docker
         environment:
             - VIRTUAL_HOST=.skumb.docker
+            - MAIN_SERVICE=node
 
     postgres:
         image: 'postgres:11.2'

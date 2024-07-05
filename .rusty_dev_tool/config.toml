@@ -1,0 +1,37 @@
+# This project config must be located in: %project_root%/.rusty_dev_tool/config.toml
+
+# Mandatory field
+local_key = "skumb"
+# If you want to use docker-compose, set this to true. So you can use the custom commands and everything not related
+# to docker-compose will be ignored or fail gracefully
+no_docker_compose = false
+
+# Mandatory node
+[commands]
+    [commands.clippy]
+        alias = "clippy"
+        execution = "cargo clippy -- -D clippy::all -D warnings -D clippy::pedantic -D clippy::nursery"
+        description = "Runs clippy with all lints enabled"
+    [commands.test]
+        alias = "test"
+        execution = "cargo nextest run"
+        description = "Runs all tests"
+    [commands.test-coverage]
+        alias = "test-coverage"
+        execution = "RUSTFLAGS=\"-C instrument-coverage\" LLVM_PROFILE_FILE=\"web_app-%p-%m.profraw\" cargo clean && RUSTFLAGS=\"-C instrument-coverage\" LLVM_PROFILE_FILE=\"web_app-%p-%m.profraw\" cargo test && grcov . --binary-path ./target/debug/ -s . -t html --ignore-not-existing --excl-start \"#\\[cfg\\(test\\)\\]\" --excl-line \"#\\[derive\\(\" --ignore \"/*\" -o ./target/debug/coverage/ && rm web_app*.profraw"
+        description = "Testing and creating coverage report"
+    [commands.start]
+        alias = "start"
+        execution = "docker-compose up -d && source .env && SENTRY_DSN=$SENTRY_DSN SENTRY_SAMPLE_RATE=$SENTRY_SAMPLE_RATE DATABASE_URL=$DATABASE_URL MAX_DATABASE_CONNECTIONS=$MAX_DATABASE_CONNECTIONS APP_SECRET=$APP_SECRET SESSION_LIFETIME=$SESSION_LIFETIME REDIS_DSN=$REDIS_DSN cargo run"
+        description = "Starting webserver with env vars"
+    [commands.migration]
+        alias = "migration"
+        execution = "source .env && DATABASE_URL=$DATABASE_URL MAX_DATABASE_CONNECTIONS=$MAX_DATABASE_CONNECTIONS diesel migration run"
+        description = "Running migrations"
+    [commands.migration_redo]
+        alias = "migration_redo"
+        execution = "source .env && DATABASE_URL=$DATABASE_URL MAX_DATABASE_CONNECTIONS=$MAX_DATABASE_CONNECTIONS diesel migration redo"
+        description = "Redoing migrations"
+
+# Mandatory node
+[environments]

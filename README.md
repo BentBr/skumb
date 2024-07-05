@@ -12,20 +12,6 @@ make help
 - Running the migration: `diesel migration run`
 - Undoing and running again the migration: `diesel migration redo`
 ### Docker (compose)
-### AWS CLI
-### Cargo Lambda
-Install: \
-`brew tap cargo-lambda/cargo-lambda` \
-`brew install cargo-lambda`
-
-
-
-
-Run
-`cargo lambda watch`
-
-Deploy
-`cargo lambda deploy -p rust -r eu-central-1`
 
 
 https://9hzofcbnk1.execute-api.eu-central-1.amazonaws.com/
@@ -33,7 +19,8 @@ https://9hzofcbnk1.execute-api.eu-central-1.amazonaws.com/test
 
 
 Todos:
-- local db
-- aws db
-- local FE (node)
-- aws FE deploy
+- clippy strict
+- add tests
+- add chat entity
+- add BE chat uri + web transport connection
+- add auth layer to endpoints (current an auth user can query all endpoints)
