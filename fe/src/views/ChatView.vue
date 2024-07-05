@@ -1,11 +1,10 @@
 <script setup>
-import CreateToDoItem from "../components/CreateToDoItem.vue";
-import ToDoItems from "../components/ToDoItems.vue";
+    import Chat from "../components/Chat.vue";
 </script>
 
 <template>
-    <div class="todos">
-        <h1>ToDos</h1>
+    <div class="chat">
+        <h1>Chat</h1>
 
         <!-- Suspense component to show to do items  -->
         <Suspense>
@@ -13,7 +12,7 @@ import ToDoItems from "../components/ToDoItems.vue";
                 <div>loading</div>
             </template>
 
-            <ToDoItems/>
+            <Chat/>
         </Suspense>
     </div>
 </template>
