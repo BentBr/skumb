@@ -1,6 +1,17 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    chat_messages (id) {
+        id -> Int4,
+        chat_id -> Int4,
+        creator_id -> Int4,
+        uuid -> Uuid,
+        text -> Varchar,
+        creation_date -> Timestamp,
+    }
+}
+
+diesel::table! {
     chats (id) {
         id -> Int4,
         creator_id -> Int4,
@@ -29,7 +40,11 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(chat_messages -> chats (chat_id));
+diesel::joinable!(chat_messages -> users (creator_id));
+
 diesel::allow_tables_to_appear_in_same_query!(
+    chat_messages,
     chats,
     users,
 );
