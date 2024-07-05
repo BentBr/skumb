@@ -1,6 +1,19 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    chats (id) {
+        id -> Int4,
+        creator_id -> Int4,
+        uuid -> Uuid,
+        name -> Varchar,
+        share_uri -> Nullable<Varchar>,
+        creation_date -> Timestamp,
+        modification_date -> Nullable<Timestamp>,
+        deletion_date -> Nullable<Timestamp>,
+    }
+}
+
+diesel::table! {
     users (id) {
         id -> Int4,
         uuid -> Uuid,
@@ -15,3 +28,8 @@ diesel::table! {
         deletion_date -> Nullable<Timestamp>,
     }
 }
+
+diesel::allow_tables_to_appear_in_same_query!(
+    chats,
+    users,
+);
