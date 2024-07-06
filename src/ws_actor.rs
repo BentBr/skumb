@@ -54,8 +54,8 @@ impl Message for ChatMessage {
 }
 
 /**
-* Implement Handler for MyWs to handle ChatMessage messages
-* This is where you will implement the logic to handle incoming ChatMessage messages
+* Implement Handler for `MyWs` to handle `ChatMessage` messages
+* This is where you will implement the logic to handle incoming `ChatMessage` messages
 */
 impl Handler<ChatMessage> for MyWs {
     type Result = ();
@@ -69,7 +69,7 @@ impl Handler<ChatMessage> for MyWs {
 }
 
 /**
-* Implement StreamHandler for MyWs to handle incoming messages
+* Implement `StreamHandler` for `MyWs` to handle incoming messages
 * This is where you will parse incoming messages and decide how to handle them
 */
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
@@ -81,7 +81,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
                     let response_message = ChatMessage {
                         uuid: Some(uuid.to_string()),
                         user_uuid: chat_message.user_uuid.clone(),
-                        text: chat_message.text.clone(),
+                        text: chat_message.text,
                         message_sent_at: Some(chrono::Utc::now().naive_utc().to_string()),
                     };
 
@@ -89,7 +89,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
 
                     self.users.do_send(BroadcastMessage {
                         chat_uuid: self.chat_uuid,
-                        message: response_message.clone(),
+                        message: response_message,
                     });
                 } else {
                     warn!("WebSocket error during parsing of message: {text}");

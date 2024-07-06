@@ -15,6 +15,7 @@ use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 use futures::future::try_join3;
 use std::env;
+use actix_web::web::Path;
 use uuid::Uuid;
 
 #[actix_web::main]
@@ -32,7 +33,7 @@ async fn main() -> std::io::Result<()> {
 
         // Returning the app
         App::new()
-            .configure(views::views_factory)
+            .configure(views::factory)
             .wrap(cors)
             .wrap(Logger::new("%a %{User-Agent}i %r %s %D"))
     })
@@ -86,15 +87,12 @@ fn create_sentry() {
 }
 
 async fn ws_index(
-    r: HttpRequest,
+    request: HttpRequest,
     stream: web::Payload,
     srv: web::Data<Addr<ws_actor::ChatServer>>,
     path: Option<web::Path<Uuid>>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let chat_uuid = match path {
-        Some(chat_uuid) => chat_uuid.into_inner(),
-        None => Uuid::new_v4(),
-    };
+    let chat_uuid = path.map_or_else(Uuid::new_v4, Path::into_inner);
 
     // Todo:: getting user_uuid from jwt auth
     let user_uuid = Uuid::new_v4();
@@ -105,7 +103,7 @@ async fn ws_index(
             user_uuid,
             users: srv.get_ref().clone(),
         },
-        &r,
+        &request,
         stream,
     )
 }
