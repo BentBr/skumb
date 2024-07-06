@@ -5,8 +5,11 @@ export const useChatStore = defineStore('chat', () => {
     let ws = ref(null);
     let messages = reactive([]);
 
-    function connect() {
-        ws.value = new WebSocket('ws://localhost:9124/ws/');
+    function connect(chat_uuid) {
+
+        const getPath = (chat_uuid) => chat_uuid ? `4/ws/${chat_uuid}` : '5/ws';
+
+        ws.value = new WebSocket(`ws://localhost:912${getPath(chat_uuid)}`);
 
         ws.value.onmessage = async (event) => {
             const message = JSON.parse(event.data);
@@ -50,6 +53,7 @@ export const useChatStore = defineStore('chat', () => {
     return {
         messages,
         connect,
+        //disconnect,
         sendMessage,
     }
 })

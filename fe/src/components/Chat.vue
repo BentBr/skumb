@@ -1,16 +1,27 @@
 <script>
-    import { ref } from 'vue';
+    import {onMounted, onUnmounted, ref} from 'vue';
+    import {useRoute} from 'vue-router';
     import { useChatStore } from '../stores/chat';
 
     export default {
         setup() {
+            const route = useRoute();
+            const chat_uuid = ref(route.params.chat_uuid); // Access the uuid parameter from the route
+
             const chatStore = useChatStore();
             const user_uuid = ref('');
             const text = ref('');
             const message_sent_at = ref('');
             const uuid = ref('');
 
-            chatStore.connect();
+            onMounted(() => {
+                chatStore.connect(chat_uuid.value);
+            });
+
+            // todo: add disconnect for leaving page or clicking out or setting browser tab to background
+            // onUnmounted(() => {
+            //     chatStore.disconnect();
+            // });
 
             const send = () => {
                 chatStore.sendMessage(user_uuid.value, text.value);

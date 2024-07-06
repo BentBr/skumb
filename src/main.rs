@@ -8,13 +8,14 @@ mod views;
 mod ws_actor;
 
 use crate::helpers::env::get_float_from_env;
+use actix::{Actor, Addr};
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
-use actix_web::{App, HttpRequest, HttpResponse, HttpServer, web};
+use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
+use futures::future::try_join3;
 use std::env;
-use futures::future::try_join;
-use ws_actor::MyWs;
+use uuid::Uuid;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -39,19 +40,33 @@ async fn main() -> std::io::Result<()> {
     .workers(1)
     .run();
 
-    let server2 = HttpServer::new(|| {
-        App::new()
-            .wrap(Logger::new("%a %{User-Agent}i %r %s %D")) // Add logger middleware here
-            .service(
-                web::resource("/ws/")
-                    .route(web::get().to(ws_index)),
-            )
-    })
-        .bind("0.0.0.0:9124")?
-        .workers(1)
-        .run();
+    let chat_server1 = ws_actor::ChatServer::new().start();
 
-    try_join(server1, server2).await?;
+    let server2 = HttpServer::new(move || {
+        App::new()
+            // todo: handle auth here
+            .wrap(Logger::new("%a %{User-Agent}i %r %s %D"))
+            .app_data(web::Data::new(chat_server1.clone()))
+            .service(web::resource("/ws/{chat_uuid}").route(web::get().to(ws_index)))
+    })
+    .bind("0.0.0.0:9124")?
+    .workers(1)
+    .run();
+
+    let chat_server2 = ws_actor::ChatServer::new().start();
+
+    let server3 = HttpServer::new(move || {
+        App::new()
+            // todo: handle auth here
+            .wrap(Logger::new("%a %{User-Agent}i %r %s %D"))
+            .app_data(web::Data::new(chat_server2.clone()))
+            .service(web::resource("/ws").route(web::get().to(ws_index)))
+    })
+    .bind("0.0.0.0:9125")?
+    .workers(1)
+    .run();
+
+    try_join3(server1, server2, server3).await?;
     Ok(())
 }
 
@@ -70,6 +85,27 @@ fn create_sentry() {
     ));
 }
 
-async fn ws_index(r: HttpRequest, stream: web::Payload) -> Result<HttpResponse, actix_web::Error> {
-    ws::start(MyWs {}, &r, stream)
+async fn ws_index(
+    r: HttpRequest,
+    stream: web::Payload,
+    srv: web::Data<Addr<ws_actor::ChatServer>>,
+    path: Option<web::Path<Uuid>>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let chat_uuid = match path {
+        Some(chat_uuid) => chat_uuid.into_inner(),
+        None => Uuid::new_v4(),
+    };
+
+    // Todo:: getting user_uuid from jwt auth
+    let user_uuid = Uuid::new_v4();
+
+    ws::start(
+        ws_actor::MyWs {
+            chat_uuid,
+            user_uuid,
+            users: srv.get_ref().clone(),
+        },
+        &r,
+        stream,
+    )
 }
