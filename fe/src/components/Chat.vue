@@ -10,7 +10,7 @@
                         <div class="chat-window">
                             <transition-group name="fade" tag="div">
                                 <div v-for="msg in chatStore.messages" :key="msg.user_uuid + msg.text" class="chat-message">
-                                    <small>{{ createDateString(msg.message_sent_at) }} </small>
+                                    <small>{{ createDateString(msg.message_sent_at) }}</small>&nbsp;
                                     <strong>{{ msg.user_uuid }}:</strong>
                                     {{ msg.text }}
                                 </div>
@@ -28,7 +28,7 @@
                         </v-expand-transition>
                         <div class="d-flex align-center">
                             <v-text-field v-model="text" label="Message" @keyup.enter="send" class="flex-grow-1"></v-text-field>
-                            <v-btn icon @click="send" color="primary">
+                            <v-btn icon="" @click="send" color="primary">
                                 <v-icon>mdi-send</v-icon>
                             </v-btn>
                         </div>
@@ -68,14 +68,21 @@
                 }
             }
 
-            onMounted(() => {
+            const connect = () => {
                 chatStore.connect(chat_uuid.value);
+            };
+
+            const disconnect = () => {
+                chatStore.disconnect();
+            };
+
+            onMounted(() => {
+                connect();
             });
 
-            // todo: add disconnect for leaving page or clicking out or setting browser tab to background
-            // onUnmounted(() => {
-            //     chatStore.disconnect();
-            // });
+            onUnmounted(() => {
+                disconnect();
+            });
 
             const send = () => {
                 if (text.value.trim() === '' || user_id.value.trim() === '') {
@@ -109,6 +116,11 @@
                 createDateString
             };
         },
+
+        beforeRouteLeave(to, from, next) {
+            this.chatStore.disconnect();
+            next();
+        }
     };
 </script>
 

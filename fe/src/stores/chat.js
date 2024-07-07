@@ -4,10 +4,18 @@ import {nextTick, reactive, ref} from 'vue'
 export const useChatStore = defineStore('chat', () => {
     let ws = ref(null);
     let messages = reactive([]);
+    let reconnectTimeout = null;
+    const maxReconnectAttempts = 10;
+    let reconnectAttempts = 0;
+
+    function getPath(chat_uuid) {
+        return chat_uuid ? `4/ws/${chat_uuid}` : '5/ws';
+    }
 
     function connect(chat_uuid) {
-
-        const getPath = (chat_uuid) => chat_uuid ? `4/ws/${chat_uuid}` : '5/ws';
+        if (ws.value && ws.value.readyState === WebSocket.OPEN) {
+            return;
+        }
 
         ws.value = new WebSocket(`ws://localhost:912${getPath(chat_uuid)}`);
 
@@ -29,17 +37,41 @@ export const useChatStore = defineStore('chat', () => {
 
         ws.value.onopen = () => {
             console.log('WebSocket connection opened');
+            reconnectAttempts = 0;
         };
 
         ws.value.onclose = () => {
-            console.log('WebSocket connection closed');
+            console.log('WebSocket connection closed from server');
+            attemptReconnect(chat_uuid);
         };
 
         ws.value.onerror = (error) => {
             console.error('WebSocket error:', error);
         };
-
     }
+
+    function disconnect() {
+        if (ws.value) {
+            ws.value.onclose = null;
+            console.log('WebSocket connection closed');
+            ws.value.close();
+            ws.value = null;
+        }
+
+        if (reconnectTimeout) {
+            clearTimeout(reconnectTimeout);
+            reconnectTimeout = null;
+        }
+    }
+
+    function attemptReconnect(chat_uuid) {
+        if (reconnectAttempts < maxReconnectAttempts) {
+            reconnectAttempts++;
+            const timeout = Math.min(1000 * 2 ** reconnectAttempts, 30000);
+            reconnectTimeout = setTimeout(() => connect(chat_uuid), timeout);
+        }
+    }
+
     function sendMessage(user_uuid, text) {
         if (ws.value && ws.value.readyState === WebSocket.OPEN) {
             const chatMessage = { user_uuid, text };
@@ -50,10 +82,11 @@ export const useChatStore = defineStore('chat', () => {
         }
     }
 
+
     return {
         messages,
         connect,
-        //disconnect,
+        disconnect,
         sendMessage,
     }
 })
