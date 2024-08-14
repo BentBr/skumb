@@ -1,9 +1,9 @@
-use crate::json_serialization::response::response_item::ResponseItem;
-use crate::json_serialization::response::response_status::ResponseStatus;
+use crate::json_serialization::response::item::Item;
+use crate::json_serialization::response::status::Status;
 use actix_web::{HttpRequest, HttpResponse};
 use uuid::Uuid;
 
-pub fn parse_uuid_from_request(request: HttpRequest) -> Result<Uuid, HttpResponse> {
+pub fn parse_uuid_from_request(request: &HttpRequest) -> Result<Uuid, HttpResponse> {
     let uuid_option = request.match_info().get("uuid");
     let uuid_string: &str;
 
@@ -12,8 +12,8 @@ pub fn parse_uuid_from_request(request: HttpRequest) -> Result<Uuid, HttpRespons
             uuid_string = uuid;
         }
         None => {
-            return Err(HttpResponse::BadRequest().json(ResponseItem::new(
-                ResponseStatus::Error,
+            return Err(HttpResponse::BadRequest().json(Item::new(
+                Status::Error,
                 "Uuid parsing error".to_string(),
                 "Check your uuid for it's format. Must be uuid_v4".to_string(),
             )))
@@ -23,8 +23,8 @@ pub fn parse_uuid_from_request(request: HttpRequest) -> Result<Uuid, HttpRespons
     let uuid_result = Uuid::parse_str(uuid_string);
 
     match uuid_result {
-        Err(error) => Err(HttpResponse::BadRequest().json(ResponseItem::new(
-            ResponseStatus::Error,
+        Err(error) => Err(HttpResponse::BadRequest().json(Item::new(
+            Status::Error,
             "Uuid has an error".to_string(),
             error.to_string(),
         ))),
@@ -58,7 +58,7 @@ mod tests {
         let response = test::call_service(&mut app, request).await;
 
         assert_eq!(
-            parse_uuid_from_request(response.request().clone())
+            parse_uuid_from_request(&response.request().clone())
                 .unwrap()
                 .to_string(),
             uuid.to_string()
@@ -73,7 +73,7 @@ mod tests {
         // We have to create the response in order to get the correct request needed
         let response = test::call_service(&mut app, request).await;
 
-        match parse_uuid_from_request(response.request().clone()) {
+        match parse_uuid_from_request(&response.request().clone()) {
             Ok(_) => panic!("Test for parsing uuid from request fails!"),
             Err(error) => {
                 let body_bytes = to_bytes(error.into_body()).await.unwrap();
@@ -96,7 +96,7 @@ mod tests {
         // We have to create the response in order to get the correct request needed
         let response = test::call_service(&mut app, request).await;
 
-        match parse_uuid_from_request(response.request().clone()) {
+        match parse_uuid_from_request(&response.request().clone()) {
             Ok(_) => panic!("Test for parsing uuid from request fails!"),
             Err(error) => {
                 let body_bytes = to_bytes(error.into_body()).await.unwrap();

@@ -1,5 +1,5 @@
 use crate::database::DB;
-use crate::models::user::item::{fetch_item, User};
+use crate::models::user::item::{fetch, User};
 use crate::schema::users;
 use bcrypt::{hash, DEFAULT_COST};
 use diesel::{Insertable, RunQueryDsl};
@@ -18,10 +18,10 @@ pub struct NewUser {
 }
 
 impl NewUser {
-    pub fn new(uuid: Uuid, username: String, email: String, password: String) -> NewUser {
-        let hashed_password: String = hash(password.as_str(), DEFAULT_COST).unwrap();
+    pub fn new(uuid: Uuid, username: String, email: String, password: &str) -> Self {
+        let hashed_password: String = hash(password, DEFAULT_COST).unwrap();
 
-        NewUser {
+        Self {
             uuid,
             username,
             email,
@@ -36,7 +36,7 @@ impl Display for NewUser {
     }
 }
 
-pub fn create_item(username: String, email: String, password: String, mut db: DB) -> Vec<User> {
+pub fn create_item(username: String, email: String, password: &str, mut db: DB) -> Vec<User> {
     let uuid = Uuid::new_v4();
     let new_item = NewUser::new(uuid, username, email, password);
 
@@ -48,5 +48,5 @@ pub fn create_item(username: String, email: String, password: String, mut db: DB
         sentry::capture_error(&error);
     }
 
-    fetch_item(uuid, db)
+    fetch(uuid, db)
 }

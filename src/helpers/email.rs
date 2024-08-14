@@ -1,5 +1,5 @@
-use crate::json_serialization::response::response_item::ResponseItem;
-use crate::json_serialization::response::response_status::ResponseStatus;
+use crate::json_serialization::response::item::Item;
+use crate::json_serialization::response::status::Status;
 use actix_web::HttpResponse;
 use regex::Regex;
 
@@ -10,18 +10,18 @@ pub fn parse_email_from_string(email: String) -> Result<String, HttpResponse> {
         Regex::new(r"(?i)^[^@]+@[A-Za-z0-9üäöß-]+(\.[A-Za-z0-9üäöß-]+)*\.[A-Za-z]{2,4}$");
 
     match email_regex {
-        Err(_) => {
-            panic!("Regex string is invalid!");
+        Err(error) => {
+            panic!("Regex string is invalid: {error}");
         }
         Ok(regex) => {
             if regex.is_match(&email) {
-                return Ok(email.clone());
+                return Ok(email);
             }
 
-            Err(HttpResponse::UnprocessableEntity().json(ResponseItem::new(
-                ResponseStatus::Error,
+            Err(HttpResponse::UnprocessableEntity().json(Item::new(
+                Status::Error,
                 "Email format error".to_string(),
-                format!("Email '{}' is not a proper email format", email),
+                format!("Email '{email}' is not a proper email format"),
             )))
         }
     }

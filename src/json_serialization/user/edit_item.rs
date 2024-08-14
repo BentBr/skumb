@@ -2,7 +2,7 @@ use crate::models::user::item::User;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
-pub struct EditUserItem {
+pub struct EditItem {
     pub uuid: String,
     pub username: String,
     pub email: String,
@@ -11,22 +11,22 @@ pub struct EditUserItem {
     pub last_name: String,
 }
 
-impl EditUserItem {
-    pub fn _new(input_item: User) -> EditUserItem {
-        EditUserItem {
+impl EditItem {
+    pub fn _new(input_item: User) -> Self {
+        Self {
             uuid: input_item.uuid.to_string(),
-            username: input_item.username.to_owned(),
-            salutation: input_item.salutation.to_owned(),
-            first_name: input_item.first_name.to_string(),
-            last_name: input_item.last_name.to_string(),
-            email: input_item.email.to_string(),
+            username: input_item.username,
+            salutation: input_item.salutation,
+            first_name: input_item.first_name,
+            last_name: input_item.last_name,
+            email: input_item.email,
         }
     }
 }
 
 #[cfg(test)]
 mod edit_user_item_tests {
-    use super::EditUserItem;
+    use super::EditItem;
     use crate::models::user::item::User;
     use uuid::Uuid;
 
@@ -47,7 +47,7 @@ mod edit_user_item_tests {
             deletion_date: None,
         };
 
-        let edit_item = EditUserItem::_new(test_user);
+        let edit_item = EditItem::_new(test_user);
 
         assert_eq!(edit_item.uuid, uuid.to_string());
         assert_eq!(edit_item.username, "john_doe");
@@ -59,7 +59,7 @@ mod edit_user_item_tests {
 
     #[test]
     fn serialize() {
-        let edit_item = EditUserItem {
+        let edit_item = EditItem {
             uuid: "72655de0-21e6-40f0-9856-9530344bf78d".to_string(),
             username: "john_doe".to_string(),
             email: "johndoe@example.com".to_string(),
@@ -77,7 +77,7 @@ mod edit_user_item_tests {
     #[test]
     fn deserialize() {
         let json = r#"{"uuid":"72655de0-21e6-40f0-9856-9530344bf78d","username":"john_doe","email":"johndoe@example.com","salutation":"Mr.","first_name":"John","last_name":"Doe"}"#;
-        let deserialized: EditUserItem = serde_json::from_str(json).unwrap();
+        let deserialized: EditItem = serde_json::from_str(json).unwrap();
 
         assert_eq!(deserialized.uuid, "72655de0-21e6-40f0-9856-9530344bf78d");
         assert_eq!(deserialized.username, "john_doe");

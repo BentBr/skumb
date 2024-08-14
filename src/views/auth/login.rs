@@ -1,6 +1,6 @@
 use crate::database::DB;
-use crate::json_serialization::response::response_item::ResponseItem;
-use crate::json_serialization::response::response_status::ResponseStatus;
+use crate::json_serialization::response::item::Item;
+use crate::json_serialization::response::status::Status;
 use crate::json_serialization::user::auth::login::Login;
 use crate::jwt::JwToken;
 use crate::models::user::item::fetch_user_by_login;
@@ -8,12 +8,12 @@ use actix_web::{web, HttpResponse};
 use std::collections::HashMap;
 
 pub async fn login(credentials: web::Json<Login>, db: DB) -> HttpResponse {
-    let password = credentials.password.clone();
-    let email = credentials.email.clone();
+    let password = &credentials.password;
+    let email = &credentials.email;
 
     match fetch_user_by_login(email, password, db) {
-        None => HttpResponse::Forbidden().json(ResponseItem::new(
-            ResponseStatus::Error,
+        None => HttpResponse::Forbidden().json(Item::new(
+            Status::Error,
             "Login failed".to_string(),
             "Check credentials: Email and password",
         )),
@@ -23,8 +23,8 @@ pub async fn login(credentials: web::Json<Login>, db: DB) -> HttpResponse {
             let mut body = HashMap::new();
             body.insert("token", raw_token);
 
-            HttpResponse::Created().json(ResponseItem::new(
-                ResponseStatus::Success,
+            HttpResponse::Created().json(Item::new(
+                Status::Success,
                 "Session token created".to_string(),
                 body,
             ))

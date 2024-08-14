@@ -30,12 +30,12 @@ pub struct PasswordUser {
 }
 
 impl User {
-    pub fn verify(&self, password: String) -> bool {
-        verify(password.as_str(), &self.password).unwrap()
+    pub fn verify(&self, password: &str) -> bool {
+        verify(password, &self.password).unwrap()
     }
 }
 
-pub fn fetch_item(uuid: Uuid, mut db: DB) -> Vec<User> {
+pub fn fetch(uuid: Uuid, mut db: DB) -> Vec<User> {
     // Loading it from DB
     users::table
         .filter(users::columns::uuid.eq(uuid))
@@ -44,7 +44,7 @@ pub fn fetch_item(uuid: Uuid, mut db: DB) -> Vec<User> {
         .unwrap()
 }
 
-pub fn delete_item(uuid: Uuid, mut db: DB) -> Option<Uuid> {
+pub fn delete(uuid: Uuid, mut db: DB) -> Option<Uuid> {
     match diesel::delete(users::table.filter(users::columns::uuid.eq(uuid)))
         .execute(&mut db.connection)
     {
@@ -65,7 +65,7 @@ pub fn delete_item(uuid: Uuid, mut db: DB) -> Option<Uuid> {
     }
 }
 
-pub fn edit_item(
+pub fn edit(
     uuid: Uuid,
     username: String,
     email: String,
@@ -89,18 +89,18 @@ pub fn edit_item(
         sentry::capture_error(&error);
     }
 
-    fetch_item(uuid, db)
+    fetch(uuid, db)
 }
 
 pub fn update_password(
     uuid: Uuid,
-    old_password: String,
-    new_password: String,
+    old_password: &str,
+    new_password: &str,
     db: DB,
     mut db2: DB,
 ) -> Option<User> {
     // Fetch the user to verify existence
-    let user = fetch_item(uuid, db);
+    let user = fetch(uuid, db);
     if let Some(user) = user.first() {
         // Check if old password fits
         if !user.verify(old_password) {
@@ -108,7 +108,7 @@ pub fn update_password(
         }
 
         // Hash the new password
-        let hashed_password = match hash(new_password.as_str(), DEFAULT_COST) {
+        let hashed_password = match hash(new_password, DEFAULT_COST) {
             Ok(hash) => hash,
             Err(error) => {
                 sentry::capture_error(&error);
@@ -135,7 +135,7 @@ pub fn update_password(
     }
 }
 
-pub fn fetch_user_by_login(email: String, password: String, mut db: DB) -> Option<User> {
+pub fn fetch_user_by_login(email: &str, password: &str, mut db: DB) -> Option<User> {
     let users = users::table
         .filter(users::columns::email.eq(email))
         .load::<User>(&mut db.connection);

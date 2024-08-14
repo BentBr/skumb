@@ -131,7 +131,7 @@ pub struct ChatServer {
 
 impl ChatServer {
     pub fn new() -> Self {
-        ChatServer {
+        Self {
             chat_rooms: HashMap::new(),
         }
     }

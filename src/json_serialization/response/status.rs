@@ -1,13 +1,13 @@
 use serde::{Serialize, Serializer};
 use std::fmt;
 
-#[derive(PartialEq, Debug)]
-pub enum ResponseStatus {
+#[derive(PartialEq, Debug, Eq)]
+pub enum Status {
     Success,
     Error,
 }
 
-impl ResponseStatus {
+impl Status {
     pub fn stringify(&self) -> String {
         match self {
             Self::Success => "Success".to_string(),
@@ -15,25 +15,22 @@ impl ResponseStatus {
         }
     }
 
-    pub fn _from_string(input_string: String) -> Self {
-        match input_string.as_str() {
+    pub fn _from_string(input_string: &str) -> Self {
+        match input_string {
             "Success" => Self::Success,
             "Error" => Self::Error,
-            _ => panic!(
-                "Input '{}' not supported as at valid response status",
-                input_string
-            ),
+            _ => panic!("Input '{input_string}' not supported as at valid response status"),
         }
     }
 }
 
-impl fmt::Display for ResponseStatus {
+impl fmt::Display for Status {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", &self.stringify())
     }
 }
 
-impl Serialize for ResponseStatus {
+impl Serialize for Status {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -44,12 +41,12 @@ impl Serialize for ResponseStatus {
 
 #[cfg(test)]
 mod response_status_tests {
-    use super::ResponseStatus;
+    use super::Status;
 
     #[test]
     fn stringify() {
-        let success_status = ResponseStatus::Success;
-        let error_status = ResponseStatus::Error;
+        let success_status = Status::Success;
+        let error_status = Status::Error;
 
         assert_eq!(success_status.stringify(), "Success".to_string());
         assert_eq!(error_status.stringify(), "Error".to_string());
@@ -57,31 +54,25 @@ mod response_status_tests {
 
     #[test]
     fn from_string() {
-        let success_string = "Success".to_string();
-        let error_string = "Error".to_string();
+        let success_string = "Success";
+        let error_string = "Error";
 
-        assert_eq!(
-            ResponseStatus::_from_string(success_string),
-            ResponseStatus::Success
-        );
-        assert_eq!(
-            ResponseStatus::_from_string(error_string),
-            ResponseStatus::Error
-        );
+        assert_eq!(Status::_from_string(success_string), Status::Success);
+        assert_eq!(Status::_from_string(error_string), Status::Error);
     }
 
     #[test]
     #[should_panic(expected = "Input 'fail' not supported as at valid response status")]
     fn from_string_panic() {
-        let not_existing_status_string = "fail".to_string();
+        let not_existing_status_string = "fail";
 
-        ResponseStatus::_from_string(not_existing_status_string);
+        Status::_from_string(not_existing_status_string);
     }
 
     #[test]
     fn display() {
-        let success_status = ResponseStatus::Success;
-        let error_status = ResponseStatus::Error;
+        let success_status = Status::Success;
+        let error_status = Status::Error;
 
         assert_eq!(format!("{}", success_status), "Success");
         assert_eq!(format!("{}", error_status), "Error");
@@ -91,8 +82,8 @@ mod response_status_tests {
     fn serialize() {
         use serde_json;
 
-        let success_status = ResponseStatus::Success;
-        let error_status = ResponseStatus::Error;
+        let success_status = Status::Success;
+        let error_status = Status::Error;
 
         assert_eq!(
             serde_json::to_string(&success_status).unwrap(),

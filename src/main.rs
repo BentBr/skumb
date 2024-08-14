@@ -7,7 +7,7 @@ mod schema;
 mod views;
 mod ws_actor;
 
-use crate::helpers::env::get_float_from_env;
+use crate::helpers::env::get_float;
 use actix::{Actor, Addr};
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
@@ -15,7 +15,6 @@ use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 use futures::future::try_join3;
 use std::env;
-use actix_web::web::Path;
 use uuid::Uuid;
 
 #[actix_web::main]
@@ -73,7 +72,7 @@ async fn main() -> std::io::Result<()> {
 
 fn create_sentry() {
     let sentry_dsn: String = env::var("SENTRY_DSN").expect("SENTRY_DSN not set");
-    let sample_rate = get_float_from_env("SENTRY_SAMPLE_RATE".to_string());
+    let sample_rate = get_float("SENTRY_SAMPLE_RATE");
 
     let _guard = sentry::init((
         sentry_dsn.as_str(),
@@ -86,15 +85,16 @@ fn create_sentry() {
     ));
 }
 
+#[allow(clippy::future_not_send)]
 async fn ws_index(
     request: HttpRequest,
     stream: web::Payload,
     srv: web::Data<Addr<ws_actor::ChatServer>>,
     path: Option<web::Path<Uuid>>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let chat_uuid = path.map_or_else(Uuid::new_v4, Path::into_inner);
+    let chat_uuid = path.map_or_else(Uuid::new_v4, web::Path::into_inner);
 
-    // Todo:: getting user_uuid from jwt auth
+    // Todo: getting user_uuid from jwt auth
     let user_uuid = Uuid::new_v4();
 
     ws::start(

@@ -2,25 +2,25 @@ use crate::models::user::item::User;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
-pub struct NewUserItem {
+pub struct NewItem {
     pub username: String,
     pub email: String,
     pub password: String,
 }
 
-impl NewUserItem {
-    pub fn _new(input_item: User) -> NewUserItem {
-        NewUserItem {
-            username: input_item.username.to_owned(),
-            email: input_item.email.to_owned(),
-            password: input_item.password.to_owned(),
+impl NewItem {
+    pub fn _new(input_item: User) -> Self {
+        Self {
+            username: input_item.username,
+            email: input_item.email,
+            password: input_item.password,
         }
     }
 }
 
 #[cfg(test)]
 mod new_user_item_tests {
-    use super::NewUserItem;
+    use super::NewItem;
     use crate::models::user::item::User;
 
     #[test]
@@ -39,7 +39,7 @@ mod new_user_item_tests {
             deletion_date: None,
         };
 
-        let new_user_item = NewUserItem::_new(user);
+        let new_user_item = NewItem::_new(user);
 
         assert_eq!(new_user_item.username, "john doe");
         assert_eq!(new_user_item.email, "john@example.com");
@@ -48,7 +48,7 @@ mod new_user_item_tests {
 
     #[test]
     fn serialize() {
-        let new_user_item = NewUserItem {
+        let new_user_item = NewItem {
             username: "john doe".to_string(),
             email: "john@example.com".to_string(),
             password: "password123".to_string(),
@@ -64,7 +64,7 @@ mod new_user_item_tests {
     #[test]
     fn deserialize() {
         let json = r#"{"username":"john doe","email":"john@example.com","password":"password123"}"#;
-        let deserialized: NewUserItem = serde_json::from_str(json).unwrap();
+        let deserialized: NewItem = serde_json::from_str(json).unwrap();
 
         assert_eq!(deserialized.username, "john doe");
         assert_eq!(deserialized.email, "john@example.com");

@@ -3,7 +3,7 @@ use crate::models::user::item::User;
 use crate::schema::users;
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl};
 
-pub fn fetch_items(count: Option<i64>, mut db: DB) -> Vec<User> {
+pub fn fetch(count: Option<i64>, mut db: DB) -> Vec<User> {
     // Loading it from DB
     let limit: i64 = count.unwrap_or(100);
 

@@ -1,22 +1,22 @@
-use crate::json_serialization::response::response_status::ResponseStatus;
+use crate::json_serialization::response::status::Status;
 use serde::Serialize;
 
 #[derive(Serialize)]
-pub struct ResponseItem<T>
+pub struct Item<T>
 where
     T: Serialize,
 {
-    pub status: ResponseStatus,
+    pub status: Status,
     pub message: String,
     pub data: T,
 }
 
-impl<T> ResponseItem<T>
+impl<T> Item<T>
 where
     T: Serialize,
 {
-    pub fn new(status: ResponseStatus, message: String, data: T) -> ResponseItem<T> {
-        ResponseItem {
+    pub const fn new(status: Status, message: String, data: T) -> Self {
+        Self {
             status,
             message,
             data,
@@ -26,8 +26,8 @@ where
 
 #[cfg(test)]
 mod response_item_tests {
-    use super::ResponseItem;
-    use crate::json_serialization::response::response_status::ResponseStatus;
+    use super::Item;
+    use crate::json_serialization::response::status::Status;
     use serde::Serialize;
 
     #[derive(Serialize)]
@@ -38,13 +38,9 @@ mod response_item_tests {
     #[test]
     fn new() {
         let test_data = TestData { value: 42 };
-        let response_item = ResponseItem::new(
-            ResponseStatus::Success,
-            "Test message".to_string(),
-            test_data,
-        );
+        let response_item = Item::new(Status::Success, "Test message".to_string(), test_data);
 
-        assert_eq!(response_item.status, ResponseStatus::Success);
+        assert_eq!(response_item.status, Status::Success);
         assert_eq!(response_item.message, "Test message");
         assert_eq!(response_item.data.value, 42);
     }
@@ -52,11 +48,7 @@ mod response_item_tests {
     #[test]
     fn serialize() {
         let test_data = TestData { value: 42 };
-        let response_item = ResponseItem::new(
-            ResponseStatus::Success,
-            "Test message".to_string(),
-            test_data,
-        );
+        let response_item = Item::new(Status::Success, "Test message".to_string(), test_data);
 
         let serialized = serde_json::to_string(&response_item).unwrap();
         let expected = r#"{"status":"Success","message":"Test message","data":{"value":42}}"#;

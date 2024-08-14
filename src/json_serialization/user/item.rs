@@ -1,9 +1,9 @@
-use crate::helpers::datetime::format_datetime;
+use crate::helpers::datetime::format;
 use crate::models::user::item::User;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
-pub struct UserItem {
+pub struct Item {
     pub uuid: String,
     pub username: String,
     pub salutation: String,
@@ -15,26 +15,26 @@ pub struct UserItem {
     pub deletion_date: Option<String>,
 }
 
-impl UserItem {
-    pub fn new(input_item: User) -> UserItem {
-        UserItem {
+impl Item {
+    pub fn new(input_item: &User) -> Self {
+        Self {
             uuid: input_item.uuid.to_string(),
-            username: input_item.username.to_owned(),
-            salutation: input_item.salutation.to_owned(),
+            username: input_item.username.clone(),
+            salutation: input_item.salutation.clone(),
             first_name: input_item.first_name.to_string(),
             last_name: input_item.last_name.to_string(),
             email: input_item.email.to_string(),
             creation_date: input_item.creation_date.to_string(),
-            modification_date: format_datetime(input_item.modification_date),
-            deletion_date: format_datetime(input_item.deletion_date),
+            modification_date: format(input_item.modification_date),
+            deletion_date: format(input_item.deletion_date),
         }
     }
 }
 
 #[cfg(test)]
 mod user_item_tests {
-    use super::UserItem;
-    use crate::helpers::datetime::format_datetime;
+    use super::Item;
+    use crate::helpers::datetime::format;
     use crate::models::user::item::User;
     use chrono::{NaiveDateTime, Utc};
     use uuid::Uuid;
@@ -60,7 +60,7 @@ mod user_item_tests {
         let time = Utc::now().naive_utc();
         let uuid = Uuid::new_v4();
         let test_user = create_test_user(uuid, time.clone());
-        let user_item = UserItem::new(test_user.clone());
+        let user_item = Item::new(&test_user);
 
         assert_eq!(user_item.uuid, test_user.uuid.to_string());
         assert_eq!(user_item.username, test_user.username);
@@ -71,11 +71,11 @@ mod user_item_tests {
         assert_eq!(user_item.creation_date, time.to_string());
         assert_eq!(
             user_item.modification_date,
-            format_datetime(test_user.modification_date)
+            format(test_user.modification_date)
         );
         assert_eq!(
             user_item.deletion_date,
-            format_datetime(test_user.deletion_date)
+            format(test_user.deletion_date)
         );
     }
 
@@ -87,7 +87,7 @@ mod user_item_tests {
             NaiveDateTime::parse_from_str("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
         let uuid = Uuid::parse_str("6023454a-2dd5-495f-86ba-9523cf645396").unwrap();
         let test_user = create_test_user(uuid, time.clone());
-        let user_item = UserItem::new(test_user);
+        let user_item = Item::new(&test_user);
 
         let serialized = serde_json::to_string(&user_item).unwrap();
         let expected = r#"{"uuid":"6023454a-2dd5-495f-86ba-9523cf645396","username":"test user","salutation":"Mr.","first_name":"John","last_name":"Doe","email":"johndoe@example.com","creation_date":"2022-01-01 00:00:00","modification_date":"2022-01-01 00:00:00","deletion_date":null}"#;
@@ -110,7 +110,7 @@ mod user_item_tests {
             "modification_date": "2022-01-01 00:00:00",
             "deletion_date": null
         }"#;
-        let deserialized: UserItem = serde_json::from_str(json).unwrap();
+        let deserialized: Item = serde_json::from_str(json).unwrap();
 
         assert_eq!(deserialized.uuid, "6023454a-2dd5-495f-86ba-9523cf645396");
         assert_eq!(deserialized.username, "test user");

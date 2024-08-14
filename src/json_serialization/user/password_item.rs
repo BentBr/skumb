@@ -2,25 +2,25 @@ use crate::models::user::item::PasswordUser;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
-pub struct PasswordUserItem {
+pub struct PasswordItem {
     pub uuid: String,
     pub old_password: String,
     pub new_password: String,
 }
 
-impl PasswordUserItem {
-    pub fn _new(input_item: PasswordUser) -> PasswordUserItem {
-        PasswordUserItem {
+impl PasswordItem {
+    pub fn _new(input_item: PasswordUser) -> Self {
+        Self {
             uuid: input_item.uuid.to_string(),
-            old_password: input_item.password.to_owned(),
-            new_password: input_item.password.to_owned(),
+            old_password: input_item.password.clone(),
+            new_password: input_item.password,
         }
     }
 }
 
 #[cfg(test)]
 mod password_user_item_tests {
-    use super::PasswordUserItem;
+    use super::PasswordItem;
     use crate::models::user::item::PasswordUser;
     use uuid::Uuid;
 
@@ -33,7 +33,7 @@ mod password_user_item_tests {
             password: "old_password".to_string(),
         };
 
-        let password_user_item = PasswordUserItem::_new(password_user);
+        let password_user_item = PasswordItem::_new(password_user);
 
         assert_eq!(password_user_item.uuid, uuid.to_string());
         assert_eq!(password_user_item.old_password, "old_password");
@@ -44,7 +44,7 @@ mod password_user_item_tests {
     fn serialize() {
         use serde_json;
 
-        let password_user_item = PasswordUserItem {
+        let password_user_item = PasswordItem {
             uuid: "72655de0-21e6-40f0-9856-9530344bf78d".to_string(),
             old_password: "old_password".to_string(),
             new_password: "new_password".to_string(),
@@ -61,7 +61,7 @@ mod password_user_item_tests {
         use serde_json;
 
         let json = r#"{"uuid":"72655de0-21e6-40f0-9856-9530344bf78d","old_password":"old_password","new_password":"new_password"}"#;
-        let deserialized: PasswordUserItem = serde_json::from_str(json).unwrap();
+        let deserialized: PasswordItem = serde_json::from_str(json).unwrap();
 
         assert_eq!(deserialized.uuid, "72655de0-21e6-40f0-9856-9530344bf78d");
         assert_eq!(deserialized.old_password, "old_password");

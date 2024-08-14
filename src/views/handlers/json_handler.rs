@@ -1,5 +1,5 @@
-use crate::json_serialization::response::response_item::ResponseItem;
-use crate::json_serialization::response::response_status::ResponseStatus;
+use crate::json_serialization::response::item::Item;
+use crate::json_serialization::response::status::Status;
 use actix_web::error::JsonPayloadError;
 use actix_web::{error, HttpRequest, HttpResponse};
 
@@ -7,15 +7,15 @@ pub fn json_error_handler(err: JsonPayloadError, _req: &HttpRequest) -> actix_we
     let error_message = match &err {
         JsonPayloadError::ContentType => "Content type error".to_string(),
         JsonPayloadError::Deserialize(json_error) => {
-            format!("JSON deserialize error: {}", json_error)
+            format!("JSON deserialize error: {json_error}")
         }
         _ => "Unknown error".to_string(),
     };
 
     error::InternalError::from_response(
         err,
-        HttpResponse::BadRequest().json(ResponseItem::new(
-            ResponseStatus::Error,
+        HttpResponse::BadRequest().json(Item::new(
+            Status::Error,
             "JSON error".to_string(),
             error_message,
         )),

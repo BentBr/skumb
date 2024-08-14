@@ -1,2 +1,2 @@
-pub mod response_item;
-pub mod response_status;
+pub mod item;
+pub mod status;

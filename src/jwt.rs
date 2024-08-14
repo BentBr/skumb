@@ -1,6 +1,6 @@
-use crate::helpers::env::get_int_from_env;
-use crate::json_serialization::response::response_item::ResponseItem;
-use crate::json_serialization::response::response_status::ResponseStatus;
+use crate::helpers::env::get_int;
+use crate::json_serialization::response::item::Item;
+use crate::json_serialization::response::status::Status;
 use actix_web::dev::Payload;
 use actix_web::{FromRequest, HttpRequest, HttpResponse, ResponseError};
 use chrono::serde::ts_seconds;
@@ -28,7 +28,7 @@ impl JwToken {
     }
 
     pub fn encode(self) -> String {
-        let key = EncodingKey::from_secret(JwToken::get_key().as_ref());
+        let key = EncodingKey::from_secret(Self::get_key().as_ref());
 
         encode(&Header::default(), &self, &key).expect("Token encoding failed")
     }
@@ -37,16 +37,16 @@ impl JwToken {
         let timestamp = Utc::now();
         let expiration_timestamp = Utc::now().add(get_session_lifetime());
 
-        JwToken {
+        Self {
             user_uuid,
             minted: timestamp,
             exp: expiration_timestamp,
         }
     }
 
-    pub fn from_token(token: String) -> Option<Self> {
-        let key = DecodingKey::from_secret(JwToken::get_key().as_ref());
-        let token_result = decode::<JwToken>(&token, &key, &Validation::new(Algorithm::HS256));
+    pub fn from_token(token: &str) -> Option<Self> {
+        let key = DecodingKey::from_secret(Self::get_key().as_ref());
+        let token_result = decode::<Self>(token, &key, &Validation::new(Algorithm::HS256));
 
         match token_result {
             Ok(data) => Some(data.claims),
@@ -61,25 +61,29 @@ impl JwToken {
 
 impl FromRequest for JwToken {
     type Error = UnauthorizedError;
-    type Future = Ready<Result<JwToken, UnauthorizedError>>;
+    type Future = Ready<Result<Self, UnauthorizedError>>;
 
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        match req.headers().get("token") {
-            Some(data) => {
-                let raw_token = data.to_str().unwrap().to_string();
-                let token_result = JwToken::from_token(raw_token);
+        req.headers().get("token").map_or_else(
+            || {
+                err(UnauthorizedError::new(
+                    "Token not in header under key 'token'".to_string(),
+                ))
+            },
+            |data| {
+                let raw_token = data.to_str().unwrap();
+                let token_result = Self::from_token(raw_token);
 
-                match token_result {
-                    Some(token) => ok(token),
-                    None => err(UnauthorizedError::new(
-                        "Token cannot be decoded".to_string(),
-                    )),
-                }
-            }
-            None => err(UnauthorizedError::new(
-                "Token not in header under key 'token'".to_string(),
-            )),
-        }
+                token_result.map_or_else(
+                    || {
+                        err(UnauthorizedError::new(
+                            "Token cannot be decoded".to_string(),
+                        ))
+                    },
+                    ok,
+                )
+            },
+        )
     }
 }
 
@@ -89,8 +93,8 @@ pub struct UnauthorizedError {
 }
 
 impl UnauthorizedError {
-    pub fn new(message: String) -> UnauthorizedError {
-        UnauthorizedError { message }
+    pub const fn new(message: String) -> Self {
+        Self { message }
     }
 }
 
@@ -102,8 +106,8 @@ impl Display for UnauthorizedError {
 
 impl ResponseError for UnauthorizedError {
     fn error_response(&self) -> HttpResponse {
-        HttpResponse::Unauthorized().json(ResponseItem::new(
-            ResponseStatus::Error,
+        HttpResponse::Unauthorized().json(Item::new(
+            Status::Error,
             "JSON error".to_string(),
             &self.message,
         ))
@@ -111,9 +115,9 @@ impl ResponseError for UnauthorizedError {
 }
 
 fn get_session_lifetime() -> TimeDelta {
-    let lifetime_in_seconds = get_int_from_env("SESSION_LIFETIME".to_string());
+    let lifetime_in_seconds = get_int("SESSION_LIFETIME");
 
-    Duration::try_seconds(lifetime_in_seconds as i64)
+    Duration::try_seconds(i64::from(lifetime_in_seconds))
         .expect("Duration calculation failed for token expiring")
 }
 
@@ -221,7 +225,7 @@ mod tests {
                 let encoded = original_token.clone().encode();
 
                 // Use from_token to decode the token
-                let decoded_token = JwToken::from_token(encoded).expect("Token decoding failed");
+                let decoded_token = JwToken::from_token(encoded.as_str()).expect("Token decoding failed");
 
                 // Assert that the decoded token matches the original one
                 assert_eq!(decoded_token.user_uuid, original_token.user_uuid);

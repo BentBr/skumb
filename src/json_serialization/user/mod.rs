@@ -1,6 +1,6 @@
 pub mod auth;
-pub mod edit_user_item;
-pub mod new_user_item;
-pub mod password_user_item;
-pub mod user_item;
-pub mod user_items;
+pub mod edit_item;
+pub mod item;
+pub mod items;
+pub mod new_item;
+pub mod password_item;
