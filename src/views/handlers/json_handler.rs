@@ -14,11 +14,7 @@ pub fn json_error_handler(err: JsonPayloadError, _req: &HttpRequest) -> actix_we
 
     error::InternalError::from_response(
         err,
-        HttpResponse::BadRequest().json(Item::new(
-            Status::Error,
-            "JSON error".to_string(),
-            error_message,
-        )),
+        HttpResponse::BadRequest().json(Item::new(Status::Error, "JSON error".to_string(), error_message)),
     )
     .into()
 }

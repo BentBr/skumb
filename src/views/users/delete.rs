@@ -15,13 +15,7 @@ pub async fn delete(request: HttpRequest, db: DB, _: JwToken) -> HttpResponse {
     };
 
     delete_item(uuid, db).map_or_else(
-        || {
-            HttpResponse::NotFound().json(Item::new(
-                Status::Error,
-                "Could not delete".to_string(),
-                "Not found",
-            ))
-        },
+        || HttpResponse::NotFound().json(Item::new(Status::Error, "Could not delete".to_string(), "Not found")),
         |uuid| {
             HttpResponse::Ok().json(Item::new(
                 Status::Success,

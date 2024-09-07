@@ -13,10 +13,7 @@ mod datetime_test {
     fn format_datetime_test() {
         let time = NaiveDateTime::new(Utc::now().date_naive(), Utc::now().time());
 
-        assert_eq!(
-            format(Some(time)),
-            Some(time.format("%Y-%m-%d %H:%M:%S").to_string())
-        );
+        assert_eq!(format(Some(time)), Some(time.format("%Y-%m-%d %H:%M:%S").to_string()));
         assert_eq!(format(None), None);
     }
 }

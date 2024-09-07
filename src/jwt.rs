@@ -75,11 +75,7 @@ impl FromRequest for JwToken {
                 let token_result = Self::from_token(raw_token);
 
                 token_result.map_or_else(
-                    || {
-                        err(UnauthorizedError::new(
-                            "Token cannot be decoded".to_string(),
-                        ))
-                    },
+                    || err(UnauthorizedError::new("Token cannot be decoded".to_string())),
                     ok,
                 )
             },
@@ -106,19 +102,14 @@ impl Display for UnauthorizedError {
 
 impl ResponseError for UnauthorizedError {
     fn error_response(&self) -> HttpResponse {
-        HttpResponse::Unauthorized().json(Item::new(
-            Status::Error,
-            "JSON error".to_string(),
-            &self.message,
-        ))
+        HttpResponse::Unauthorized().json(Item::new(Status::Error, "JSON error".to_string(), &self.message))
     }
 }
 
 fn get_session_lifetime() -> TimeDelta {
     let lifetime_in_seconds = get_int("SESSION_LIFETIME");
 
-    Duration::try_seconds(i64::from(lifetime_in_seconds))
-        .expect("Duration calculation failed for token expiring")
+    Duration::try_seconds(i64::from(lifetime_in_seconds)).expect("Duration calculation failed for token expiring")
 }
 
 #[cfg(test)]
@@ -135,10 +126,7 @@ mod tests {
     #[test]
     async fn new_token() {
         temp_env::with_vars(
-            [
-                ("APP_SECRET", Some("test_secret")),
-                ("SESSION_LIFETIME", Some("3600")),
-            ],
+            [("APP_SECRET", Some("test_secret")), ("SESSION_LIFETIME", Some("3600"))],
             || {
                 let uuid = Uuid::new_v4();
                 let token = JwToken::new(uuid);
@@ -153,10 +141,7 @@ mod tests {
     #[test]
     async fn encode_token() {
         temp_env::with_vars(
-            [
-                ("APP_SECRET", Some("test_secret")),
-                ("SESSION_LIFETIME", Some("3600")),
-            ],
+            [("APP_SECRET", Some("test_secret")), ("SESSION_LIFETIME", Some("3600"))],
             || {
                 let uuid = Uuid::new_v4();
                 let token = JwToken::new(uuid);
@@ -170,10 +155,7 @@ mod tests {
     #[test]
     async fn encode_decode_token() {
         temp_env::with_vars(
-            [
-                ("APP_SECRET", Some("test_secret")),
-                ("SESSION_LIFETIME", Some("3600")),
-            ],
+            [("APP_SECRET", Some("test_secret")), ("SESSION_LIFETIME", Some("3600"))],
             || {
                 let uuid = Uuid::new_v4();
                 let original_token = JwToken::new(uuid);
@@ -181,8 +163,7 @@ mod tests {
 
                 // Manually decode the token
                 let key = DecodingKey::from_secret(JwToken::get_key().as_ref());
-                let decoding_result =
-                    decode::<JwToken>(&encoded, &key, &Validation::new(Algorithm::HS256));
+                let decoding_result = decode::<JwToken>(&encoded, &key, &Validation::new(Algorithm::HS256));
 
                 match decoding_result {
                     Ok(decoded_token_data) => {
@@ -191,19 +172,11 @@ mod tests {
                         assert_eq!(decoded_token.user_uuid, original_token.clone().user_uuid);
                         assert_eq!(
                             decoded_token.minted.to_string(),
-                            original_token
-                                .clone()
-                                .minted
-                                .format("%Y-%m-%d %H:%M:%S %Z")
-                                .to_string()
+                            original_token.clone().minted.format("%Y-%m-%d %H:%M:%S %Z").to_string()
                         );
                         assert_eq!(
                             decoded_token.exp.to_string(),
-                            original_token
-                                .clone()
-                                .exp
-                                .format("%Y-%m-%d %H:%M:%S %Z")
-                                .to_string()
+                            original_token.clone().exp.format("%Y-%m-%d %H:%M:%S %Z").to_string()
                         );
                     }
                     Err(_) => panic!("Token decoding failed"),
@@ -215,10 +188,7 @@ mod tests {
     #[test]
     async fn from_token() {
         temp_env::with_vars(
-            [
-                ("APP_SECRET", Some("test_secret")),
-                ("SESSION_LIFETIME", Some("3600")),
-            ],
+            [("APP_SECRET", Some("test_secret")), ("SESSION_LIFETIME", Some("3600"))],
             || {
                 let uuid = Uuid::new_v4();
                 let original_token = JwToken::new(uuid);
@@ -231,17 +201,11 @@ mod tests {
                 assert_eq!(decoded_token.user_uuid, original_token.user_uuid);
                 assert_eq!(
                     decoded_token.minted.to_string(),
-                    original_token
-                        .minted
-                        .format("%Y-%m-%d %H:%M:%S %Z")
-                        .to_string()
+                    original_token.minted.format("%Y-%m-%d %H:%M:%S %Z").to_string()
                 );
                 assert_eq!(
                     decoded_token.exp.to_string(),
-                    original_token
-                        .exp
-                        .format("%Y-%m-%d %H:%M:%S %Z")
-                        .to_string()
+                    original_token.exp.format("%Y-%m-%d %H:%M:%S %Z").to_string()
                 );
             },
         );
@@ -266,10 +230,7 @@ mod tests {
     #[test]
     async fn get_key() {
         temp_env::with_vars(
-            [
-                ("APP_SECRET", Some("test_secret")),
-                ("SESSION_LIFETIME", Some("3600")),
-            ],
+            [("APP_SECRET", Some("test_secret")), ("SESSION_LIFETIME", Some("3600"))],
             || {
                 assert_eq!(JwToken::get_key(), env::var("APP_SECRET").unwrap());
             },
@@ -287,10 +248,7 @@ mod tests {
     #[test]
     async fn from_request_token_valid() {
         temp_env::with_vars(
-            [
-                ("APP_SECRET", Some("test_secret")),
-                ("SESSION_LIFETIME", Some("3600")),
-            ],
+            [("APP_SECRET", Some("test_secret")), ("SESSION_LIFETIME", Some("3600"))],
             move || {
                 actix_rt::task::spawn_blocking(move || {
                     let system = actix_rt::System::new();
@@ -307,8 +265,7 @@ mod tests {
                             .to_http_request();
 
                         // Call the from_request method
-                        let token_result =
-                            JwToken::from_request(&request, &mut Payload::None).await;
+                        let token_result = JwToken::from_request(&request, &mut Payload::None).await;
 
                         // Check if the token is valid
                         match token_result {
@@ -324,10 +281,7 @@ mod tests {
     #[test]
     async fn from_request_token_invalid() {
         temp_env::with_vars(
-            [
-                ("APP_SECRET", Some("test_secret")),
-                ("SESSION_LIFETIME", Some("3600")),
-            ],
+            [("APP_SECRET", Some("test_secret")), ("SESSION_LIFETIME", Some("3600"))],
             || {
                 actix_rt::task::spawn_blocking(|| {
                     let system = actix_rt::System::new();
@@ -341,8 +295,7 @@ mod tests {
                             .to_http_request();
 
                         // Call the from_request method
-                        let token_result =
-                            JwToken::from_request(&request, &mut Payload::None).await;
+                        let token_result = JwToken::from_request(&request, &mut Payload::None).await;
 
                         // Check if the token is valid
                         match token_result {
@@ -378,9 +331,6 @@ mod tests {
         let error = UnauthorizedError::new("Test error message".to_string());
         let response = error.error_response();
 
-        assert_eq!(
-            response.status().as_str(),
-            http::StatusCode::UNAUTHORIZED.as_str()
-        );
+        assert_eq!(response.status().as_str(), http::StatusCode::UNAUTHORIZED.as_str());
     }
 }

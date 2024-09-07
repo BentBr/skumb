@@ -86,10 +86,7 @@ mod response_status_tests {
         let success_status = Status::Success;
         let error_status = Status::Error;
 
-        assert_eq!(
-            serde_json::to_string(&success_status).unwrap(),
-            "\"Success\""
-        );
+        assert_eq!(serde_json::to_string(&success_status).unwrap(), "\"Success\"");
         assert_eq!(serde_json::to_string(&error_status).unwrap(), "\"Error\"");
     }
 }

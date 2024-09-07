@@ -78,10 +78,7 @@ mod user_items_tests {
             user_items.user_items[0].modification_date,
             format(users[0].modification_date)
         );
-        assert_eq!(
-            user_items.user_items[0].deletion_date,
-            format(users[0].deletion_date)
-        );
+        assert_eq!(user_items.user_items[0].deletion_date, format(users[0].deletion_date));
 
         assert_eq!(user_items.user_items[1].uuid, uuid2.to_string());
         assert_eq!(user_items.user_items[1].username, "user2");
@@ -94,18 +91,14 @@ mod user_items_tests {
             user_items.user_items[1].modification_date,
             format(users[1].modification_date)
         );
-        assert_eq!(
-            user_items.user_items[1].deletion_date,
-            format(users[1].deletion_date)
-        );
+        assert_eq!(user_items.user_items[1].deletion_date, format(users[1].deletion_date));
     }
 
     #[test]
     fn serialize() {
         let uuid_string1 = "72655de0-21e6-40f0-9856-9530344bf78d";
         let uuid_string2 = "85979ec6-66c5-4ba4-9153-606f2e9e2f6a";
-        let time =
-            NaiveDateTime::parse_from_str("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
+        let time = NaiveDateTime::parse_from_str("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
 
         let users = vec![
             create_sample_user(

@@ -17,8 +17,7 @@ pub struct DbConnection {
 
 lazy_static! {
     pub static ref DBCONNECTION: DbConnection = {
-        let database_url =
-            env::var("DATABASE_URL").expect("DATABASE_URL must be set in environment");
+        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set in environment");
         let max_database_connections = get_int("MAX_DATABASE_CONNECTIONS");
 
         DbConnection {
@@ -43,9 +42,7 @@ impl FromRequest for DB {
             Err(error) => {
                 sentry::capture_error(&error);
 
-                err(ErrorServiceUnavailable(
-                    "could not make connection to database",
-                ))
+                err(ErrorServiceUnavailable("could not make connection to database"))
             }
         }
     }

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /**
- * ChatMessage struct - Represents a chat message and contains the data of each message a user sends
+ * `ChatMessage` struct - Represents a chat message and contains the data of each message a user sends
  */
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct ChatMessage {

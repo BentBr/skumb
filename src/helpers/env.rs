@@ -1,8 +1,7 @@
 use std::env;
 
 pub fn get_int(env_var: &str) -> u32 {
-    let string = env::var(env_var)
-        .unwrap_or_else(|_| panic!("{env_var} must be set in environment as unsigned int"));
+    let string = env::var(env_var).unwrap_or_else(|_| panic!("{env_var} must be set in environment as unsigned int"));
     let int = string.parse::<u32>();
 
     match int {
@@ -12,8 +11,7 @@ pub fn get_int(env_var: &str) -> u32 {
 }
 
 pub fn get_float(env_var: &str) -> f32 {
-    let string = env::var(env_var)
-        .unwrap_or_else(|_| panic!("{env_var} must be set in environment as float",));
+    let string = env::var(env_var).unwrap_or_else(|_| panic!("{env_var} must be set in environment as float",));
     let float = string.parse::<f32>();
 
     match float {

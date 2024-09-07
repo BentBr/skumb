@@ -25,10 +25,7 @@ async fn main() -> std::io::Result<()> {
 
     let server1 = HttpServer::new(|| {
         // Handling CORS issues
-        let cors = Cors::default()
-            .allow_any_origin()
-            .allow_any_header()
-            .allow_any_method();
+        let cors = Cors::default().allow_any_origin().allow_any_header().allow_any_method();
 
         // Returning the app
         App::new()

@@ -7,9 +7,9 @@ use serde::{Deserialize, Serialize};
  * Message struct - Represents a message that can be sent over the WebSocket.
  * Contains a message type and the data of the message.
  *
- ** Pings are used to determine if the connection is still active and the other sides still lives.
- ** Connections are used to change the connection status of the chat itself (active or inactive).
- ** ChatMessages are the actual messages being sent between users.
+ ** `Pings` are used to determine if the connection is still active and the other sides still lives.
+ ** `Connections` are used to change the connection status of the chat itself (active or inactive).
+ ** `ChatMessages` are the actual messages being sent between users.
  */
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Message {

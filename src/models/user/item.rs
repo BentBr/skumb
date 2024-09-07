@@ -45,9 +45,7 @@ pub fn fetch(uuid: Uuid, mut db: DB) -> Vec<User> {
 }
 
 pub fn delete(uuid: Uuid, mut db: DB) -> Option<Uuid> {
-    match diesel::delete(users::table.filter(users::columns::uuid.eq(uuid)))
-        .execute(&mut db.connection)
-    {
+    match diesel::delete(users::table.filter(users::columns::uuid.eq(uuid))).execute(&mut db.connection) {
         Ok(exec) => {
             // Verbosity for console
             if exec > 0 {
@@ -92,13 +90,7 @@ pub fn edit(
     fetch(uuid, db)
 }
 
-pub fn update_password(
-    uuid: Uuid,
-    old_password: &str,
-    new_password: &str,
-    db: DB,
-    mut db2: DB,
-) -> Option<User> {
+pub fn update_password(uuid: Uuid, old_password: &str, new_password: &str, db: DB, mut db2: DB) -> Option<User> {
     // Fetch the user to verify existence
     let user = fetch(uuid, db);
     if let Some(user) = user.first() {

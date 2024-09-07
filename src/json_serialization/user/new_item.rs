@@ -55,8 +55,7 @@ mod new_user_item_tests {
         };
 
         let serialized = serde_json::to_string(&new_user_item).unwrap();
-        let expected =
-            r#"{"username":"john doe","email":"john@example.com","password":"password123"}"#;
+        let expected = r#"{"username":"john doe","email":"john@example.com","password":"password123"}"#;
 
         assert_eq!(serialized, expected);
     }

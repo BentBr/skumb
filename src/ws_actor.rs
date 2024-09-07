@@ -23,10 +23,7 @@ impl Actor for MyWs {
     type Context = ws::WebsocketContext<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
-        info!(
-            "Client {} connected to socket {}",
-            self.user_uuid, self.chat_uuid
-        );
+        info!("Client {} connected to socket {}", self.user_uuid, self.chat_uuid);
 
         self.users.do_send(Connect {
             chat_uuid: self.chat_uuid,
@@ -36,10 +33,7 @@ impl Actor for MyWs {
     }
 
     fn stopped(&mut self, _: &mut Self::Context) {
-        info!(
-            "Client {} disconnected to socket {}",
-            self.user_uuid, self.chat_uuid
-        );
+        info!("Client {} disconnected to socket {}", self.user_uuid, self.chat_uuid);
 
         self.users.do_send(Disconnect {
             chat_uuid: self.chat_uuid,
@@ -158,10 +152,7 @@ impl Handler<Disconnect> for ChatServer {
     type Result = ();
 
     fn handle(&mut self, msg: Disconnect, _: &mut Self::Context) {
-        info!(
-            "Removing client {} from chat {}",
-            msg.user_uuid, msg.chat_uuid
-        );
+        info!("Removing client {} from chat {}", msg.user_uuid, msg.chat_uuid);
 
         if let Some(users) = self.chat_rooms.get_mut(&msg.chat_uuid) {
             users.retain(|(uuid, _)| *uuid != msg.user_uuid);

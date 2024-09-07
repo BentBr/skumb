@@ -6,8 +6,7 @@ use regex::Regex;
 pub fn parse_email_from_string(email: String) -> Result<String, HttpResponse> {
     // Remember to use the same here as for the database constraint (users table)
     // See 2024-03-30-223226_user_email_constraint
-    let email_regex =
-        Regex::new(r"(?i)^[^@]+@[A-Za-z0-9üäöß-]+(\.[A-Za-z0-9üäöß-]+)*\.[A-Za-z]{2,4}$");
+    let email_regex = Regex::new(r"(?i)^[^@]+@[A-Za-z0-9üäöß-]+(\.[A-Za-z0-9üäöß-]+)*\.[A-Za-z]{2,4}$");
 
     match email_regex {
         Err(error) => {
@@ -48,10 +47,7 @@ mod test {
         for email in invalid_emails {
             match parse_email_from_string(email.to_string()) {
                 Ok(parsed_email) => assert_eq!(parsed_email, email),
-                Err(_) => panic!(
-                    "Valid email '{}' was incorrectly not identified as valid.",
-                    email
-                ),
+                Err(_) => panic!("Valid email '{}' was incorrectly not identified as valid.", email),
             }
         }
     }
@@ -69,10 +65,7 @@ mod test {
 
         for email in invalid_emails {
             match parse_email_from_string(email.to_string()) {
-                Ok(_) => panic!(
-                    "Invalid email '{}' was incorrectly identified as not invalid.",
-                    email
-                ),
+                Ok(_) => panic!("Invalid email '{}' was incorrectly identified as not invalid.", email),
                 Err(response) => {
                     assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
 

@@ -23,11 +23,7 @@ pub async fn login(credentials: web::Json<Login>, db: DB) -> HttpResponse {
             let mut body = HashMap::new();
             body.insert("token", raw_token);
 
-            HttpResponse::Created().json(Item::new(
-                Status::Success,
-                "Session token created".to_string(),
-                body,
-            ))
+            HttpResponse::Created().json(Item::new(Status::Success, "Session token created".to_string(), body))
         }
     }
 }

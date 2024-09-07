@@ -69,10 +69,7 @@ mod user_item_tests {
         assert_eq!(user_item.last_name, test_user.last_name);
         assert_eq!(user_item.email, test_user.email);
         assert_eq!(user_item.creation_date, time.to_string());
-        assert_eq!(
-            user_item.modification_date,
-            format(test_user.modification_date)
-        );
+        assert_eq!(user_item.modification_date, format(test_user.modification_date));
         assert_eq!(user_item.deletion_date, format(test_user.deletion_date));
     }
 
@@ -80,8 +77,7 @@ mod user_item_tests {
     fn serialize() {
         use serde_json;
 
-        let time =
-            NaiveDateTime::parse_from_str("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
+        let time = NaiveDateTime::parse_from_str("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
         let uuid = Uuid::parse_str("6023454a-2dd5-495f-86ba-9523cf645396").unwrap();
         let test_user = create_test_user(uuid, time.clone());
         let user_item = Item::new(&test_user);
@@ -116,10 +112,7 @@ mod user_item_tests {
         assert_eq!(deserialized.last_name, "Doe");
         assert_eq!(deserialized.email, "johndoe@example.com");
         assert_eq!(deserialized.creation_date, "2022-01-01 00:00:00");
-        assert_eq!(
-            deserialized.modification_date,
-            Some("2022-01-01 00:00:00".to_string())
-        );
+        assert_eq!(deserialized.modification_date, Some("2022-01-01 00:00:00".to_string()));
         assert_eq!(deserialized.deletion_date, None);
     }
 }

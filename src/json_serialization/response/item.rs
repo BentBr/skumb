@@ -16,11 +16,7 @@ where
     T: Serialize,
 {
     pub const fn new(status: Status, message: String, data: T) -> Self {
-        Self {
-            status,
-            message,
-            data,
-        }
+        Self { status, message, data }
     }
 }
 

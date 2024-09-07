@@ -34,15 +34,11 @@ mod tests {
 
     #[test]
     fn test_ping_serialize() {
-        let ping = Ping {
-            ping_type: Knock::Ping,
-        };
+        let ping = Ping { ping_type: Knock::Ping };
         let json = serde_json::to_string(&ping).unwrap();
         assert_eq!(json, r#"{"ping_type":"Ping"}"#);
 
-        let pong = Ping {
-            ping_type: Knock::Pong,
-        };
+        let pong = Ping { ping_type: Knock::Pong };
         let json = serde_json::to_string(&pong).unwrap();
         assert_eq!(json, r#"{"ping_type":"Pong"}"#);
     }
@@ -66,14 +62,8 @@ mod tests {
 
     #[test]
     fn test_knock_deserialize() {
-        assert_eq!(
-            serde_json::from_str::<Knock>(r#""Ping""#).unwrap(),
-            Knock::Ping
-        );
-        assert_eq!(
-            serde_json::from_str::<Knock>(r#""Pong""#).unwrap(),
-            Knock::Pong
-        );
+        assert_eq!(serde_json::from_str::<Knock>(r#""Ping""#).unwrap(), Knock::Ping);
+        assert_eq!(serde_json::from_str::<Knock>(r#""Pong""#).unwrap(), Knock::Pong);
     }
 
     #[test]

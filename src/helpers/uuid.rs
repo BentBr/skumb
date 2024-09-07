@@ -80,10 +80,7 @@ mod tests {
                 let body_json: Value = serde_json::from_slice(&body_bytes).unwrap();
 
                 assert_eq!(body_json["message"], "Uuid has an error");
-                assert_eq!(
-                    body_json["data"],
-                    "invalid character: expected an optional prefix of `urn:uuid:` followed by [0-9a-fA-F-], found `n` at 1"
-                );
+                assert_eq!(body_json["data"], "invalid character: expected an optional prefix of `urn:uuid:` followed by [0-9a-fA-F-], found `n` at 1");
             }
         }
     }
@@ -103,10 +100,7 @@ mod tests {
                 let body_json: Value = serde_json::from_slice(&body_bytes).unwrap();
 
                 assert_eq!(body_json["message"], "Uuid parsing error");
-                assert_eq!(
-                    body_json["data"],
-                    "Check your uuid for it's format. Must be uuid_v4"
-                );
+                assert_eq!(body_json["data"], "Check your uuid for it's format. Must be uuid_v4");
             }
         }
     }

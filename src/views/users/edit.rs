@@ -13,12 +13,7 @@ use sentry::Level;
 use uuid::Uuid;
 
 #[allow(clippy::future_not_send)]
-pub async fn edit(
-    user_item: web::Json<EditItem>,
-    request: HttpRequest,
-    db: DB,
-    _: JwToken,
-) -> HttpResponse {
+pub async fn edit(user_item: web::Json<EditItem>, request: HttpRequest, db: DB, _: JwToken) -> HttpResponse {
     let uuid: Uuid = match parse_uuid_from_request(&request) {
         Err(response) => return response,
         Ok(valid_uuid) => valid_uuid,
@@ -36,15 +31,7 @@ pub async fn edit(
     };
 
     // Editing in DB
-    let item = edit_item(
-        uuid,
-        username,
-        valid_email,
-        salutation,
-        first_name,
-        last_name,
-        db,
-    );
+    let item = edit_item(uuid, username, valid_email, salutation, first_name, last_name, db);
 
     item.first().map_or_else(
         || {
