@@ -15,7 +15,8 @@ impl Status {
         }
     }
 
-    pub fn _from_string(input_string: &str) -> Self {
+    #[allow(dead_code)]
+    pub fn from_string(input_string: &str) -> Self {
         match input_string {
             "Success" => Self::Success,
             "Error" => Self::Error,
@@ -57,8 +58,8 @@ mod response_status_tests {
         let success_string = "Success";
         let error_string = "Error";
 
-        assert_eq!(Status::_from_string(success_string), Status::Success);
-        assert_eq!(Status::_from_string(error_string), Status::Error);
+        assert_eq!(Status::from_string(success_string), Status::Success);
+        assert_eq!(Status::from_string(error_string), Status::Error);
     }
 
     #[test]
@@ -66,7 +67,7 @@ mod response_status_tests {
     fn from_string_panic() {
         let not_existing_status_string = "fail";
 
-        Status::_from_string(not_existing_status_string);
+        Status::from_string(not_existing_status_string);
     }
 
     #[test]

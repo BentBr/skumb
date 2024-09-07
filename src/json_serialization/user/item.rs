@@ -73,10 +73,7 @@ mod user_item_tests {
             user_item.modification_date,
             format(test_user.modification_date)
         );
-        assert_eq!(
-            user_item.deletion_date,
-            format(test_user.deletion_date)
-        );
+        assert_eq!(user_item.deletion_date, format(test_user.deletion_date));
     }
 
     #[test]
