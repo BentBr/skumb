@@ -14,7 +14,7 @@ no_docker_compose = false
         description = "Runs clippy with all lints enabled"
     [commands.test]
         alias = "test"
-        execution = "cargo nextest run"
+        execution = "cargo nextest run --no-fail-fast"
         description = "Runs all tests"
     [commands.test-coverage]
         alias = "test-coverage"
