@@ -1,17 +1,12 @@
-use actix::{Actor, Addr, AsyncContext, Context, Handler, Message, Recipient, StreamHandler};
+use actix::{Actor, Addr, AsyncContext, Context, Handler, Message as ActixMessage, Recipient, StreamHandler};
 use actix_web_actors::ws;
 use log::{error, info, warn};
-use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use uuid::Uuid;
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct ChatMessage {
-    pub uuid: Option<String>,
-    pub user_uuid: String,
-    pub text: String,
-    pub message_sent_at: Option<String>,
-}
+use crate::json_serialization::web_socket::chat_message::ChatMessage;
+use crate::json_serialization::web_socket::message::{Data, Message as WsMessage};
+use crate::json_serialization::web_socket::message::Data::ChatMessage as MessageEnum;
+use crate::json_serialization::web_socket::ping::{Knock, Ping};
 
 pub struct MyWs {
     pub chat_uuid: Uuid,
@@ -43,7 +38,7 @@ impl Actor for MyWs {
 }
 
 // Ensure ChatMessage implements Message with a suitable result type
-impl Message for ChatMessage {
+impl ActixMessage for WsMessage {
     type Result = (); // Use () if no response is needed, or specify a type if a response is expected
 }
 
@@ -51,10 +46,10 @@ impl Message for ChatMessage {
 * Implement Handler for `MyWs` to handle `ChatMessage` messages
 * This is where you will implement the logic to handle incoming `ChatMessage` messages
 */
-impl Handler<ChatMessage> for MyWs {
+impl Handler<WsMessage> for MyWs {
     type Result = ();
 
-    fn handle(&mut self, msg: ChatMessage, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: WsMessage, ctx: &mut Self::Context) -> Self::Result {
         // For debugging purposes, you can log all the messages here!
         let response = serde_json::to_string(&msg).unwrap();
 
@@ -70,13 +65,38 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
         match msg {
             Ok(ws::Message::Text(text)) => {
-                if let Ok(chat_message) = serde_json::from_str::<ChatMessage>(&text) {
-                    let uuid = Uuid::new_v4();
-                    let response_message = ChatMessage {
-                        uuid: Some(uuid.to_string()),
-                        user_uuid: chat_message.user_uuid.clone(),
-                        text: chat_message.text,
-                        message_sent_at: Some(chrono::Utc::now().naive_utc().to_string()),
+                if let Ok(chat_message) = serde_json::from_str::<WsMessage>(&text) {
+
+                    let response_message = match chat_message.data {
+                        MessageEnum(message) => {
+                            let uuid = Uuid::new_v4();
+
+                            WsMessage::new(
+                                Data::ChatMessage(ChatMessage::new(
+                                    uuid.to_string(),
+                                    message.user_uuid,
+                                    message.text,
+                                    chrono::Utc::now().naive_utc().to_string(),
+                                )),
+                            )
+                        },
+                        Data::Connection(connection) => {
+                            //Todo: add other message types and use them here
+
+                            warn!("CONNECTION: WebSocket error during parsing of message: {text}");
+                            WsMessage::new(
+                                Data::Connection(connection),
+                            )
+                        },
+                        Data::Ping(_ping) => {
+                            //Todo: add other message types
+
+                            warn!("PING: WebSocket error during parsing of message: {text}");
+
+                            WsMessage::new(
+                                Data::Ping(Ping::new(Knock::Pong)),
+                            )
+                        }
                     };
 
                     // Todo: storing the message in the database
@@ -97,30 +117,30 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     }
 }
 
-#[derive(Message)]
+#[derive(ActixMessage)]
 #[rtype(result = "()")]
 struct Connect {
     chat_uuid: Uuid,
     user_uuid: Uuid,
-    addr: Recipient<ChatMessage>,
+    addr: Recipient<WsMessage>,
 }
 
-#[derive(Message)]
+#[derive(ActixMessage)]
 #[rtype(result = "()")]
 struct Disconnect {
     chat_uuid: Uuid,
     user_uuid: Uuid,
 }
 
-#[derive(Message)]
+#[derive(ActixMessage)]
 #[rtype(result = "()")]
 struct BroadcastMessage {
     chat_uuid: Uuid, // Chat room UUID to identify which chat room to broadcast to
-    message: ChatMessage,
+    message: WsMessage,
 }
 
 pub struct ChatServer {
-    chat_rooms: HashMap<Uuid, HashSet<(Uuid, Recipient<ChatMessage>)>>,
+    chat_rooms: HashMap<Uuid, HashSet<(Uuid, Recipient<WsMessage>)>>,
 }
 
 impl ChatServer {

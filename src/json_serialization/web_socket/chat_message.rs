@@ -12,13 +12,12 @@ pub struct ChatMessage {
 }
 
 impl ChatMessage {
-    #[allow(dead_code)]
-    pub const fn new(user_uuid: String, text: String) -> Self {
+    pub const fn new(uuid: String, user_uuid: String, text: String, message_sent_at: String) -> Self {
         Self {
-            uuid: None,
+            uuid: Some(uuid),
             user_uuid,
             text,
-            message_sent_at: None,
+            message_sent_at: Some(message_sent_at),
         }
     }
 }

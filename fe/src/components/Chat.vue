@@ -4,7 +4,12 @@
             <v-col>
                 <v-card class="pa-5">
                     <v-card-title>
-                        <h1>Chat</h1>
+                            <h1 class="text-h6">
+                                Chat
+                                <v-icon :color="chatActive ? 'green' : 'red'" class="sm-2">
+                                    mdi-circle-small
+                                </v-icon>
+                            </h1>
                     </v-card-title>
                     <v-card-text>
                         <div class="chat-window">
@@ -40,7 +45,7 @@
 </template>
 
 <script>
-    import {onMounted, onUnmounted, ref} from 'vue';
+import {computed, onMounted, onUnmounted, ref} from 'vue';
     import {useRoute} from 'vue-router';
     import { useChatStore } from '../stores/chat';
 
@@ -55,6 +60,7 @@
             const message_sent_at = ref('');
             const uuid = ref('');
             const usernameEntered = ref(false)
+            const chatActive = computed(() => chatStore.connectors.length);
 
             const onUsernameBlur = () => {
                 if (user_id.value.trim() !== '') {
@@ -104,6 +110,7 @@
             };
 
             return {
+                chatActive,
                 usernameEntered,
                 chatStore,
                 user_id,
@@ -143,5 +150,11 @@
 
     .fade-enter-from, .fade-leave-to {
         opacity: 0;
+    }
+
+    v-card-title {
+        h1 {
+            font-size: 0.5rem;
+        }
     }
 </style>

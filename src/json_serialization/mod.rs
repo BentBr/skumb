@@ -1,3 +1,3 @@
 pub mod response;
 pub mod user;
-mod web_socket;
+pub mod web_socket;
