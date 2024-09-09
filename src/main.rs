@@ -40,9 +40,13 @@ async fn main() -> std::io::Result<()> {
     let chat_server1 = ws_actor::ChatServer::new().start();
 
     let server2 = HttpServer::new(move || {
+        // Handling CORS issues
+        let cors = Cors::default().allow_any_origin().allow_any_header().allow_any_method();
+
         App::new()
             // todo: handle auth here
             .wrap(Logger::new("%a %{User-Agent}i %r %s %D"))
+            .wrap(cors)
             .app_data(web::Data::new(chat_server1.clone()))
             .service(web::resource("/ws/{chat_uuid}").route(web::get().to(ws_index)))
     })
