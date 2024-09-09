@@ -12,6 +12,13 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
+            -   name: Set up Rust
+                uses: actions-rs/toolchain@v1
+                with:
+                  toolchain: 1.83.0
+                  override: true
+                  components: clippy
+                  profile: minimal
             -   name: Cache cargo registry
                 uses: actions/cache@v2
                 with:
