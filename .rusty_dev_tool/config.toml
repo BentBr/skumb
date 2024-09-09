@@ -34,7 +34,7 @@ no_docker_compose = false
         description = "Redoing migrations"
     [commands.eslint]
         alias = "eslint"
-        execution = "docker compose exec node yarn eslint"
+        execution = "docker compose exec node yarn eslint --max-warnings 0"
         description = "Running eslint"
     [commands.prettier]
         alias = "prettier"
@@ -50,7 +50,7 @@ no_docker_compose = false
         description = "Running prettier fix"
     [commands.lint]
         alias = "lint"
-        execution = "docker compose exec node yarn eslint && docker compose exec node yarn prettier"
+        execution = "docker compose exec node yarn eslint --max-warnings 0 && docker compose exec node yarn prettier"
         description = "Running all linters"
 
 # Mandatory node
