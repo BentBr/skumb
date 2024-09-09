@@ -1,0 +1,47 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:vue/vue3-recommended",
+    "plugin:prettier/recommended"
+  ],
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "vue",
+    "prettier"
+  ],
+  "rules": {
+    "vue/html-indent": ["error", 4],
+    "indent": "off",          // Turning it off as we use prettier
+    "no-alert": 0,
+    "vue/html-self-closing": ["error", {
+      "html": {
+        "void": "always",        // Do not allow self-closing slash on void elements (<img>, <br>, etc.)
+        "normal": "never",      // No self-closing slash on regular HTML elements
+        "component": "any"      // Allow self-closing on Vue components
+      },
+      "svg": "always",          // Allow self-closing in SVG elements
+      "math": "always"          // Allow self-closing in MathML elements
+    }],
+    "vue/no-v-html": 0,
+    "vue/require-prop-types": "off",
+    "vue/require-default-prop": "off",
+    "vue/multi-word-component-names": "off",
+    "curly": ["error", "all"],
+    "eqeqeq": ["error", "smart"],
+    "quotes": ["error", "single"],
+    "semi": ["error", "never"],
+    "prettier/prettier": ["error", {
+      "tabWidth": 4,                      // Set tab width to 4 spaces
+      "vueIndentScriptAndStyle": true,  // Ensure Vue scripts and styles are indented
+      "bracketSameLine": false          // Ensure closing brackets are on a new line
+    }]
+  }
+}

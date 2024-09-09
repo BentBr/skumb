@@ -32,6 +32,14 @@ no_docker_compose = false
         alias = "migration_redo"
         execution = "source .env && DATABASE_URL=$DATABASE_URL MAX_DATABASE_CONNECTIONS=$MAX_DATABASE_CONNECTIONS diesel migration redo"
         description = "Redoing migrations"
+    [commands.eslint]
+        alias = "eslint"
+        execution = "docker compose exec node yarn eslint"
+        description = "Running eslint"
+    [commands.prettier]
+        alias = "prettier"
+        execution = "docker compose exec node yarn prettier"
+        description = "Running prettier"
 
 # Mandatory node
 [environments]

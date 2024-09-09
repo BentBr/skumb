@@ -1,0 +1,25 @@
+{
+  "printWidth": 120,
+  "tabWidth": 4,
+  "semi": false,
+  "singleQuote": true,
+  "vueIndentScriptAndStyle": true,
+  "bracketSameLine": false,
+  "overrides": [
+    {
+      "files": "*.scss",
+      "options": {
+        "singleQuote": false,
+        "tabWidth": 4
+      }
+    },
+    {
+      "files": "*.{js,vue,html}",
+      "options": {
+        "semi": false,
+        "singleQuote": true,
+        "tabWidth": 4
+      }
+    }
+  ]
+}

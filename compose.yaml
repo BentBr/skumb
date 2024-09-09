@@ -10,9 +10,9 @@ services:
         networks:
             default:
                 aliases:
-                    - skumb.docker
+                    - node.skumb.docker
         environment:
-            - VIRTUAL_HOST=.skumb.docker
+            - VIRTUAL_HOST=.node.skumb.docker
             - MAIN_SERVICE=node
 
     postgres:
@@ -23,11 +23,11 @@ services:
             - 'POSTGRES_USER=username'
             - 'POSTGRES_DB=skumb'
             - 'POSTGRES_PASSWORD=password'
-            - VIRTUAL_HOST=.pg-skumb.docker
+            - VIRTUAL_HOST=.pg.skumb.docker
         networks:
             default:
                 aliases:
-                    - pg-skumb.docker
+                    - pg.skumb.docker
 
     redis:
         image: 'redis:5.0.5'
@@ -36,6 +36,6 @@ services:
         networks:
             default:
                 aliases:
-                    - redis-skumb.docker
+                    - redis.skumb.docker
         environment:
-            - VIRTUAL_HOST=.redis-skumb.docker
+            - VIRTUAL_HOST=.redis.skumb.docker
