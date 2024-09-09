@@ -44,10 +44,10 @@
                                 v-model="text"
                                 label="Message"
                                 class="flex-grow-1"
-                                @keyup.enter="send"
                                 :disabled="!isActive"
+                                @keyup.enter="send"
                             ></v-text-field>
-                            <v-btn icon="" color="primary" @click="send" :disabled="!isActive">
+                            <v-btn icon="" color="primary" :disabled="!isActive" @click="send">
                                 <v-icon>mdi-send</v-icon>
                             </v-btn>
                         </div>
