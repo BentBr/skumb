@@ -74,16 +74,15 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
                             WsMessage::new(
                                 Data::ChatMessage(ChatMessage::new(
                                     uuid.to_string(),
-                                    message.user_uuid,
+                                    message.user_id,
                                     message.text,
                                     chrono::Utc::now().naive_utc().to_string(),
                                 )),
                             )
                         },
                         Data::Connection(connection) => {
+                            warn!("Response of connection message: {:?}", connection);
                             //Todo: add other message types and use them here
-
-                            warn!("CONNECTION: WebSocket error during parsing of message: {text}");
                             WsMessage::new(
                                 Data::Connection(connection),
                             )
@@ -101,10 +100,13 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
 
                     // Todo: storing the message in the database
 
+
                     self.users.do_send(BroadcastMessage {
                         chat_uuid: self.chat_uuid,
-                        message: response_message,
+                        message: response_message.clone(),
                     });
+
+                    info!("Did send following message to chat room: {:?}", response_message);
                 } else {
                     warn!("WebSocket error during parsing of message: {text}");
                 }

@@ -45,7 +45,7 @@ mod tests {
     fn test_data_enum_serialize() {
         let chat = ChatMessage {
             uuid: Some("123".to_string()),
-            user_uuid: "user123".to_string(),
+            user_id: "user123".to_string(),
             text: "Hello".to_string(),
             message_sent_at: Some("2023-10-01T12:00:00Z".to_string()),
         };
@@ -53,13 +53,13 @@ mod tests {
         let json = serde_json::to_string(&data).unwrap();
         assert_eq!(
             json,
-            r#"{"ChatMessage":{"uuid":"123","user_uuid":"user123","text":"Hello","message_sent_at":"2023-10-01T12:00:00Z"}}"#
+            r#"{"ChatMessage":{"uuid":"123","user_id":"user123","text":"Hello","message_sent_at":"2023-10-01T12:00:00Z"}}"#
         );
 
-        let connection = Connection::new(Connected);
+        let connection = Connection::new(Connected, "user123".to_string());
         let data = Data::Connection(connection);
         let json = serde_json::to_string(&data).unwrap();
-        assert_eq!(json, r#"{"Connection":{"status":"Connected"}}"#);
+        assert_eq!(json, r#"{"Connection":{"status":"Connected","user_id":"user123"}}"#);
 
         let ping = Ping::new(Knock::Ping);
         let data = Data::Ping(ping.clone());
@@ -71,7 +71,7 @@ mod tests {
     fn test_message_new() {
         let chat = ChatMessage {
             uuid: Some("123".to_string()),
-            user_uuid: "user123".to_string(),
+            user_id: "user123".to_string(),
             text: "Hello".to_string(),
             message_sent_at: Some("2023-10-01T12:00:00Z".to_string()),
         };

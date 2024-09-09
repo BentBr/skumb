@@ -6,16 +6,16 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct ChatMessage {
     pub uuid: Option<String>,
-    pub user_uuid: String,
+    pub user_id: String,
     pub text: String,
     pub message_sent_at: Option<String>,
 }
 
 impl ChatMessage {
-    pub const fn new(uuid: String, user_uuid: String, text: String, message_sent_at: String) -> Self {
+    pub const fn new(uuid: String, user_id: String, text: String, message_sent_at: String) -> Self {
         Self {
             uuid: Some(uuid),
-            user_uuid,
+            user_id,
             text,
             message_sent_at: Some(message_sent_at),
         }

@@ -4,19 +4,27 @@
             <v-col>
                 <v-card class="pa-5">
                     <v-card-title>
-                            <h1 class="text-h6">
-                                Chat
-                                <v-icon :color="chatActive ? 'green' : 'red'" class="sm-2">
-                                    mdi-circle-small
-                                </v-icon>
-                            </h1>
+                        <p>
+                            <span v-if="!isActive">
+                                <v-icon color="red" class="sm-2"> mdi-circle-small </v-icon>
+                                <small>Your chat is inactive</small>
+                            </span>
+                            <span v-else>
+                                <v-icon color="green" class="sm-2"> mdi-circle-small </v-icon>
+                            </span>
+                        </p>
                     </v-card-title>
                     <v-card-text>
                         <div class="chat-window">
                             <transition-group name="fade" tag="div">
-                                <div v-for="msg in chatStore.messages" :key="msg.user_uuid + msg.text" class="chat-message">
-                                    <small>{{ createDateString(msg.message_sent_at) }}</small>&nbsp;
-                                    <strong>{{ msg.user_uuid }}:</strong>
+                                <div
+                                    v-for="msg in chatStore.messages"
+                                    :key="msg.user_id + msg.text"
+                                    class="chat-message"
+                                >
+                                    <small>{{ createDateString(msg.message_sent_at) }}</small
+                                    >&nbsp;
+                                    <strong>{{ msg.user_id }}:</strong>
                                     {{ msg.text }}
                                 </div>
                             </transition-group>
@@ -24,7 +32,7 @@
                         <v-expand-transition>
                             <v-text-field
                                 v-if="!usernameEntered"
-                                v-model="user_id"
+                                v-model="chatStore.user_id"
                                 label="Username"
                                 class="mt-4"
                                 @blur="onUsernameBlur"
@@ -32,8 +40,13 @@
                             ></v-text-field>
                         </v-expand-transition>
                         <div class="d-flex align-center">
-                            <v-text-field v-model="text" label="Message" @keyup.enter="send" class="flex-grow-1"></v-text-field>
-                            <v-btn icon="" @click="send" color="primary">
+                            <v-text-field
+                                v-model="text"
+                                label="Message"
+                                class="flex-grow-1"
+                                @keyup.enter="send"
+                            ></v-text-field>
+                            <v-btn icon="" color="primary" @click="send">
                                 <v-icon>mdi-send</v-icon>
                             </v-btn>
                         </div>
@@ -45,56 +58,64 @@
 </template>
 
 <script>
-import {computed, onMounted, onUnmounted, ref} from 'vue';
-    import {useRoute} from 'vue-router';
-    import { useChatStore } from '../stores/chat';
+    import { computed, onUnmounted, ref } from 'vue'
+    import { useRoute } from 'vue-router'
+    import { useChatStore } from '../stores/chat'
+    import ConnectionStatus from '../stores/models/connectionStatus'
 
     export default {
+        beforeRouteLeave(to, from, next) {
+            this.chatStore.disconnect()
+            next()
+        },
         setup() {
-            const route = useRoute();
-            const chat_uuid = ref(route.params.chat_uuid); // Access the uuid parameter from the route
+            const route = useRoute()
+            const chat_uuid = ref(route.params.chat_uuid) // Access the uuid parameter from the route
 
-            const chatStore = useChatStore();
-            const user_id = ref('');
-            const text = ref('');
-            const message_sent_at = ref('');
-            const uuid = ref('');
+            const chatStore = useChatStore()
+            const text = ref('')
+            const message_sent_at = ref('')
             const usernameEntered = ref(false)
-            const chatActive = computed(() => chatStore.connectors.length);
 
             const onUsernameBlur = () => {
-                if (user_id.value.trim() !== '') {
+                if (chatStore.user_id.trim() !== '') {
                     usernameEntered.value = true
                 }
+
+                connect()
             }
 
             const onUsernameEnter = () => {
-                if (user_id.value.trim() !== '') {
+                if (chatStore.user_id.trim() !== '') {
                     usernameEntered.value = true
+
+                    connect()
                 }
             }
 
             const connect = () => {
-                chatStore.connect(chat_uuid.value);
-            };
+                console.log('Current uuid: ', chat_uuid.value)
+                chatStore.connect(chat_uuid.value)
+            }
 
             const disconnect = () => {
-                chatStore.disconnect();
-            };
+                chatStore.disconnect()
+            }
 
-            onMounted(() => {
-                connect();
-            });
+            // Todo: remove
+            // onMounted(() => {
+            //     connect();
+            // });
 
             onUnmounted(() => {
-                disconnect();
-            });
+                disconnect()
+            })
 
             const send = () => {
-                if (text.value.trim() === '' || user_id.value.trim() === '') {
+                if (text.value.trim() === '' || chatStore.user_id.trim() === '') {
                     return
                 }
-                chatStore.sendMessage(user_id.value, text.value);
+                chatStore.sendMessage(chatStore.user_id, text.value)
 
                 text.value = ''
                 if (!usernameEntered.value) {
@@ -103,32 +124,29 @@ import {computed, onMounted, onUnmounted, ref} from 'vue';
             }
 
             const createDateString = (dateString) => {
-                const date = new Date(dateString);
-                const options = { hour: '2-digit', minute: '2-digit' };
+                const date = new Date(dateString)
+                const options = { hour: '2-digit', minute: '2-digit' }
 
-                return new Intl.DateTimeFormat('default', options).format(date);
-            };
+                return new Intl.DateTimeFormat('default', options).format(date)
+            }
+
+            const isActive = computed(() => {
+                return chatStore.connectionStatus === ConnectionStatus.ACTIVE
+            })
 
             return {
-                chatActive,
                 usernameEntered,
                 chatStore,
-                user_id,
                 message_sent_at,
-                uuid,
                 text,
+                isActive,
                 onUsernameBlur,
                 onUsernameEnter,
                 send,
-                createDateString
-            };
+                createDateString,
+            }
         },
-
-        beforeRouteLeave(to, from, next) {
-            this.chatStore.disconnect();
-            next();
-        }
-    };
+    }
 </script>
 
 <style>
@@ -144,11 +162,13 @@ import {computed, onMounted, onUnmounted, ref} from 'vue';
         margin-bottom: 10px;
     }
 
-    .fade-enter-active, .fade-leave-active {
+    .fade-enter-active,
+    .fade-leave-active {
         transition: opacity 0.75s;
     }
 
-    .fade-enter-from, .fade-leave-to {
+    .fade-enter-from,
+    .fade-leave-to {
         opacity: 0;
     }
 

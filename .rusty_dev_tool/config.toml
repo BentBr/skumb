@@ -40,6 +40,14 @@ no_docker_compose = false
         alias = "prettier"
         execution = "docker compose exec node yarn prettier"
         description = "Running prettier"
+    [commands.eslint-fix]
+        alias = "eslint-fix"
+        execution = "docker compose exec node yarn eslint --fix"
+        description = "Running eslint fix"
+    [commands.prettier-fix]
+        alias = "prettier-fix"
+        execution = "docker compose exec node yarn prettier --write"
+        description = "Running prettier fix"
 
 # Mandatory node
 [environments]

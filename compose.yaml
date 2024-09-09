@@ -10,9 +10,9 @@ services:
         networks:
             default:
                 aliases:
-                    - node.skumb.docker
+                    - skumb.docker
         environment:
-            - VIRTUAL_HOST=.node.skumb.docker
+            - VIRTUAL_HOST=.skumb.docker
             - MAIN_SERVICE=node
 
     postgres:

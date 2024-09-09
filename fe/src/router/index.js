@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
@@ -7,7 +7,7 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: HomeView
+            component: HomeView,
         },
         {
             path: '/chat',
@@ -15,7 +15,7 @@ const router = createRouter({
             // route level code-splitting
             // this generates a separate chunk (About.[hash].js) for this route
             // which is lazy-loaded when the route is visited.
-            component: () => import('../views/ChatView.vue')
+            component: () => import('../views/ChatView.vue'),
         },
         {
             path: '/chat/:chat_uuid',
@@ -23,7 +23,7 @@ const router = createRouter({
             // route level code-splitting
             // this generates a separate chunk (About.[hash].js) for this route
             // which is lazy-loaded when the route is visited.
-            component: () => import('../views/ChatView.vue')
+            component: () => import('../views/ChatView.vue'),
         },
         {
             path: '/chat/:chat_uuid',
@@ -31,9 +31,9 @@ const router = createRouter({
             // route level code-splitting
             // this generates a separate chunk (About.[hash].js) for this route
             // which is lazy-loaded when the route is visited.
-            component: () => import('../views/ChatView.vue')
+            component: () => import('../views/ChatView.vue'),
         },
-    ]
+    ],
 })
 
 export default router

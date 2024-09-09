@@ -1,12 +1,23 @@
 import './assets/main.css'
 
-import {createApp} from 'vue'
-import {createPinia} from 'pinia'
-import { createVuetify } from 'vuetify';
-import 'vuetify/styles';
-import '@mdi/font/css/materialdesignicons.css';
-import { VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VBtn, VIcon, VTextField, VExpandTransition } from 'vuetify/components'
-import { VFadeTransition } from 'vuetify/components/transitions';
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import { createVuetify } from 'vuetify'
+import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
+import {
+    VContainer,
+    VRow,
+    VCol,
+    VCard,
+    VCardTitle,
+    VCardText,
+    VBtn,
+    VIcon,
+    VTextField,
+    VExpandTransition,
+} from 'vuetify/components'
+import { VFadeTransition } from 'vuetify/components/transitions'
 
 import App from './App.vue'
 import router from './router'
@@ -23,15 +34,14 @@ const vuetify = createVuetify({
         VIcon,
         VTextField,
         VExpandTransition,
-        VFadeTransition
+        VFadeTransition,
     },
-});
+})
 
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
-app.use(vuetify);
+app.use(vuetify)
 
 app.mount('#app')
-
