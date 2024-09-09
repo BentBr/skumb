@@ -48,6 +48,10 @@ no_docker_compose = false
         alias = "prettier-fix"
         execution = "docker compose exec node yarn prettier --write"
         description = "Running prettier fix"
+    [commands.lint]
+        alias = "lint"
+        execution = "docker compose exec node yarn eslint && docker compose exec node yarn prettier"
+        description = "Running all linters"
 
 # Mandatory node
 [environments]

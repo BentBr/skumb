@@ -27,7 +27,7 @@ impl Connection {
 #[cfg(test)]
 mod tests {
     use super::Connection;
-    use super::Status::{Connected, StayingAlive, Disconnected};
+    use super::Status::{Connected, Disconnected, StayingAlive};
 
     #[test]
     fn test_connection_new() {

@@ -1,12 +1,12 @@
+use crate::json_serialization::web_socket::chat_message::ChatMessage;
+use crate::json_serialization::web_socket::message::Data::ChatMessage as MessageEnum;
+use crate::json_serialization::web_socket::message::{Data, Message as WsMessage};
+use crate::json_serialization::web_socket::ping::{Knock, Ping};
 use actix::{Actor, Addr, AsyncContext, Context, Handler, Message as ActixMessage, Recipient, StreamHandler};
 use actix_web_actors::ws;
 use log::{error, info, warn};
 use std::collections::{HashMap, HashSet};
 use uuid::Uuid;
-use crate::json_serialization::web_socket::chat_message::ChatMessage;
-use crate::json_serialization::web_socket::message::{Data, Message as WsMessage};
-use crate::json_serialization::web_socket::message::Data::ChatMessage as MessageEnum;
-use crate::json_serialization::web_socket::ping::{Knock, Ping};
 
 pub struct MyWs {
     pub chat_uuid: Uuid,
@@ -66,40 +66,32 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
         match msg {
             Ok(ws::Message::Text(text)) => {
                 if let Ok(chat_message) = serde_json::from_str::<WsMessage>(&text) {
-
                     let response_message = match chat_message.data {
                         MessageEnum(message) => {
                             let uuid = Uuid::new_v4();
 
-                            WsMessage::new(
-                                Data::ChatMessage(ChatMessage::new(
-                                    uuid.to_string(),
-                                    message.user_id,
-                                    message.text,
-                                    chrono::Utc::now().naive_utc().to_string(),
-                                )),
-                            )
-                        },
+                            WsMessage::new(Data::ChatMessage(ChatMessage::new(
+                                uuid.to_string(),
+                                message.user_id,
+                                message.text,
+                                chrono::Utc::now().naive_utc().to_string(),
+                            )))
+                        }
                         Data::Connection(connection) => {
                             warn!("Response of connection message: {:?}", connection);
                             //Todo: add other message types and use them here
-                            WsMessage::new(
-                                Data::Connection(connection),
-                            )
-                        },
+                            WsMessage::new(Data::Connection(connection))
+                        }
                         Data::Ping(_ping) => {
                             //Todo: add other message types
 
                             warn!("PING: WebSocket error during parsing of message: {text}");
 
-                            WsMessage::new(
-                                Data::Ping(Ping::new(Knock::Pong)),
-                            )
+                            WsMessage::new(Data::Ping(Ping::new(Knock::Pong)))
                         }
                     };
 
                     // Todo: storing the message in the database
-
 
                     self.users.do_send(BroadcastMessage {
                         chat_uuid: self.chat_uuid,

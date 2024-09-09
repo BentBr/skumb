@@ -13,8 +13,6 @@
             <nav>
                 <RouterLink to="/">Home</RouterLink>
                 <RouterLink to="/chat">Chat</RouterLink>
-                <RouterLink to="/chat/1287a1e9-b65a-456e-87e4-d173acd0da93">Shared chat</RouterLink>
-                <RouterLink to="/chat/0087a1e9-b65a-456e-87e4-d173acd0da00">Shared chat 2</RouterLink>
             </nav>
         </div>
     </header>

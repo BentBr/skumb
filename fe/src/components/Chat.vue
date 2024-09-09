@@ -58,7 +58,7 @@
 </template>
 
 <script>
-    import { computed, onUnmounted, ref } from 'vue'
+    import { computed, onMounted, onUnmounted, ref } from 'vue'
     import { useRoute } from 'vue-router'
     import { useChatStore } from '../stores/chat'
     import ConnectionStatus from '../stores/models/connectionStatus'
@@ -77,24 +77,29 @@
             const message_sent_at = ref('')
             const usernameEntered = ref(false)
 
+            onMounted(() => {
+                if (chat_uuid.value) {
+                    chatStore.chat_uuid = chat_uuid.value
+                }
+                if (!chatStore.chat_uuid) {
+                    chatStore.fetchChatUuid()
+                }
+            })
+
             const onUsernameBlur = () => {
                 if (chatStore.user_id.trim() !== '') {
                     usernameEntered.value = true
                 }
 
-                connect()
+                chatStore.connect()
             }
 
             const onUsernameEnter = () => {
                 if (chatStore.user_id.trim() !== '') {
                     usernameEntered.value = true
 
-                    connect()
+                    chatStore.connect()
                 }
-            }
-
-            const connect = () => {
-                chatStore.connect(chat_uuid.value)
             }
 
             const disconnect = () => {

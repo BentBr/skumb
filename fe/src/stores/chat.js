@@ -3,29 +3,35 @@ import { nextTick, reactive, ref } from 'vue'
 import ChatMessage from './models/chatMessage'
 import Connection from './models/connection'
 import ConnectionStatus from './models/connectionStatus'
+import router from '../router'
 
 export const useChatStore = defineStore('chat', () => {
     let ws = ref()
     let messages = reactive([])
     let reconnectTimeout = null
     let user_id = ref('')
+    let chat_uuid = ref('')
     const maxReconnectAttempts = 10
     let reconnectAttempts = 0
     let connections = reactive({ currentChat: [], otherSides: [] })
     let connectionStatus = ref(ConnectionStatus.INACTIVE)
 
-    function getPath(chat_uuid) {
+    function getChatPath(chat_uuid) {
         // Todo: make this dynamic
-        return chat_uuid ? `4/ws/${chat_uuid}` : '5/ws'
+        return 'ws://localhost:912' + (chat_uuid ? `4/ws/${chat_uuid}` : '5/ws')
     }
 
-    function connect(chat_uuid) {
+    function getChatUuidPath() {
+        // Todo: make this localhost dynamic
+        return 'http://localhost:9123/v1/chat/uuid'
+    }
+
+    function connect() {
         if (ws.value && ws.value.readyState === WebSocket.OPEN) {
             return
         }
 
-        // Todo: make this localhost dynamic
-        ws.value = new WebSocket(`ws://localhost:912${getPath(chat_uuid)}`)
+        ws.value = new WebSocket(getChatPath(chat_uuid.value))
 
         ws.value.onmessage = async (event) => {
             handleWsMessage(event)
@@ -42,7 +48,7 @@ export const useChatStore = defineStore('chat', () => {
 
         ws.value.onclose = () => {
             console.log('WebSocket connection closed from server')
-            attemptReconnect(chat_uuid)
+            attemptReconnect(chat_uuid.value)
         }
 
         ws.value.onerror = (error) => {
@@ -66,9 +72,10 @@ export const useChatStore = defineStore('chat', () => {
             reconnectTimeout = null
         }
 
-        this.connectionStatus = ConnectionStatus.INACTIVE
-        this.messages = []
-        this.user_id = ''
+        connectionStatus.value = ConnectionStatus.INACTIVE
+        messages.length = 0
+        user_id.value = ''
+        chat_uuid.value = ''
     }
 
     function attemptReconnect(chat_uuid) {
@@ -183,13 +190,32 @@ export const useChatStore = defineStore('chat', () => {
         }
     }
 
+    const fetchChatUuid = async () => {
+        try {
+            const response = await fetch(getChatUuidPath())
+            if (!response.ok) {
+                console.error('Network response was not ok for uuid fetching: ', response.status)
+            }
+
+            const data = await response.json()
+            console.log('Fetched chat UUID:', data.data)
+            chat_uuid.value = data.data
+
+            await router.push(`/chat/${chat_uuid.value}`)
+        } catch (error) {
+            console.error('Failed to fetch chat UUID:', error)
+        }
+    }
+
     return {
         messages,
         user_id,
+        chat_uuid,
         connections,
         connectionStatus,
         connect,
         disconnect,
         sendMessage,
+        fetchChatUuid,
     }
 })

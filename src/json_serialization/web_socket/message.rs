@@ -26,9 +26,7 @@ pub enum Data {
 impl Message {
     #[allow(dead_code)]
     pub const fn new(data: Data) -> Self {
-        Self {
-            data,
-        }
+        Self { data }
     }
 }
 
@@ -86,10 +84,7 @@ mod tests {
         let message = Message::new(Data::Ping(ping));
         let json = serde_json::to_string(&message).unwrap();
 
-        assert_eq!(
-            json,
-            r#"{"data":{"Ping":{"ping_type":"Ping"}}}"#
-        );
+        assert_eq!(json, r#"{"data":{"Ping":{"ping_type":"Ping"}}}"#);
     }
 
     #[test]

@@ -50,15 +50,6 @@ async fn main() -> std::io::Result<()> {
     .workers(1)
     .run();
 
-
-
-
-
-
-
-
-
-
     let chat_server2 = ws_actor::ChatServer::new().start();
 
     let server3 = HttpServer::new(move || {
