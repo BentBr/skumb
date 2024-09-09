@@ -15,6 +15,7 @@ export const useChatStore = defineStore('chat', () => {
     let connectionStatus = ref(ConnectionStatus.INACTIVE)
 
     function getPath(chat_uuid) {
+        // Todo: make this dynamic
         return chat_uuid ? `4/ws/${chat_uuid}` : '5/ws'
     }
 
@@ -26,80 +27,8 @@ export const useChatStore = defineStore('chat', () => {
         // Todo: make this localhost dynamic
         ws.value = new WebSocket(`ws://localhost:912${getPath(chat_uuid)}`)
 
-        // Todo: put this in a separate function
         ws.value.onmessage = async (event) => {
-            const message = JSON.parse(event.data)
-            // todo: handle other message types as well (ping/pong connect/disconnect)
-            //todo:  add user id to temp message
-
-            if ('Connection' in message.data) {
-                console.log('got new connection', message.data.Connection.status)
-                const connection = new Connection(message.data.Connection.status, message.data.Connection.user_id)
-
-                const target =
-                    message.data.Connection.user_id === user_id.value ? connections.currentChat : connections.otherSides
-
-                // Don't push multiple times
-                if (
-                    !target.some((conn) => conn.user_id === connection.user_id) &&
-                    (connection.status === ConnectionStatus.CONNECTED ||
-                        connection.status === ConnectionStatus.STAYING_ALIVE)
-                ) {
-                    target.push(connection)
-
-                    // If we push a new item to the otherSides array, we need to send a connection message (staying alive) as
-                    // well, so the other side knows we are already connected
-                    if (
-                        connection.user_id !== user_id.value &&
-                        connections.otherSides.some((conn) => conn.user_id === connection.user_id)
-                    ) {
-                        sendConnection(user_id, ConnectionStatus.STAYING_ALIVE)
-                        console.log('sending staying alive')
-                    }
-                } else if (
-                    target.some((conn) => conn.user_id === connection.user_id) &&
-                    connection.status === ConnectionStatus.DISCONNECTED
-                ) {
-                    const index = target.findIndex((conn) => conn.user_id === connection.user_id)
-                    if (index !== -1) {
-                        target.splice(index, 1)
-                    }
-                }
-
-                let activeCounter = 0
-                connections.otherSides.forEach((c) => {
-                    if (c.status === ConnectionStatus.CONNECTED || c.status === ConnectionStatus.STAYING_ALIVE) {
-                        activeCounter++
-                    }
-                })
-
-                if (activeCounter > 0) {
-                    connectionStatus.value = ConnectionStatus.ACTIVE
-                } else {
-                    connectionStatus.value = ConnectionStatus.INACTIVE
-                }
-            } else if ('ChatMessage' in message.data) {
-                const chatMessage = new ChatMessage(
-                    message.data.ChatMessage.user_id,
-                    message.data.ChatMessage.text,
-                    message.data.ChatMessage.uuid,
-                    message.data.ChatMessage.message_sent_at,
-                )
-
-                const index = messages.findIndex(
-                    (m) => m.user_id === chatMessage.user_id && m.text === chatMessage.text && m.uuid === 'temp',
-                )
-                if (index !== -1) {
-                    // Update the existing message with the full data from the server
-                    messages[index] = chatMessage
-                } else {
-                    // Add the new message to the array
-                    messages.push(chatMessage)
-                }
-            } else {
-                // todo: handle ping
-                console.error('Unknown message type:', message)
-            }
+            handleWsMessage(event)
 
             await nextTick()
         }
@@ -172,6 +101,88 @@ export const useChatStore = defineStore('chat', () => {
         }
     }
 
+    function handleWsMessage(event) {
+        const message = JSON.parse(event.data)
+        // todo: handle other message types as well (ping/pong connect/disconnect)
+        //todo:  add user id to temp message
+
+        if ('Connection' in message.data) {
+            handleConnectionMessage(message)
+        } else if ('ChatMessage' in message.data) {
+            handleChatMessage(message)
+        } else {
+            // todo: handle ping
+            console.error('Unknown message type:', message)
+        }
+    }
+
+    function handleConnectionMessage(message) {
+        console.log('got new connection', message.data.Connection.status)
+        const connection = new Connection(message.data.Connection.status, message.data.Connection.user_id)
+
+        const target =
+            message.data.Connection.user_id === user_id.value ? connections.currentChat : connections.otherSides
+
+        // Don't push multiple times
+        if (
+            !target.some((conn) => conn.user_id === connection.user_id) &&
+            (connection.status === ConnectionStatus.CONNECTED || connection.status === ConnectionStatus.STAYING_ALIVE)
+        ) {
+            target.push(connection)
+
+            // If we push a new item to the otherSides array, we need to send a connection message (staying alive) as
+            // well, so the other side knows we are already connected
+            if (
+                connection.user_id !== user_id.value &&
+                connections.otherSides.some((conn) => conn.user_id === connection.user_id)
+            ) {
+                sendConnection(user_id, ConnectionStatus.STAYING_ALIVE)
+                console.log('sending staying alive')
+            }
+        } else if (
+            target.some((conn) => conn.user_id === connection.user_id) &&
+            connection.status === ConnectionStatus.DISCONNECTED
+        ) {
+            const index = target.findIndex((conn) => conn.user_id === connection.user_id)
+            if (index !== -1) {
+                target.splice(index, 1)
+            }
+        }
+
+        let activeCounter = 0
+        connections.otherSides.forEach((c) => {
+            if (c.status === ConnectionStatus.CONNECTED || c.status === ConnectionStatus.STAYING_ALIVE) {
+                activeCounter++
+            }
+        })
+
+        if (activeCounter > 0) {
+            connectionStatus.value = ConnectionStatus.ACTIVE
+        } else {
+            connectionStatus.value = ConnectionStatus.INACTIVE
+        }
+    }
+
+    function handleChatMessage(message) {
+        const chatMessage = new ChatMessage(
+            message.data.ChatMessage.user_id,
+            message.data.ChatMessage.text,
+            message.data.ChatMessage.uuid,
+            message.data.ChatMessage.message_sent_at,
+        )
+
+        const index = messages.findIndex(
+            (m) => m.user_id === chatMessage.user_id && m.text === chatMessage.text && m.uuid === 'temp',
+        )
+        if (index !== -1) {
+            // Update the existing message with the full data from the server
+            messages[index] = chatMessage
+        } else {
+            // Add the new message to the array
+            messages.push(chatMessage)
+        }
+    }
+
     return {
         messages,
         user_id,
@@ -182,7 +193,3 @@ export const useChatStore = defineStore('chat', () => {
         sendMessage,
     }
 })
-
-function handleWsMessage(event) {
-    const message = JSON.parse(event.data)
-}

@@ -94,18 +94,12 @@
             }
 
             const connect = () => {
-                console.log('Current uuid: ', chat_uuid.value)
                 chatStore.connect(chat_uuid.value)
             }
 
             const disconnect = () => {
                 chatStore.disconnect()
             }
-
-            // Todo: remove
-            // onMounted(() => {
-            //     connect();
-            // });
 
             onUnmounted(() => {
                 disconnect()
