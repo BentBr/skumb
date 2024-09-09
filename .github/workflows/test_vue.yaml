@@ -26,6 +26,10 @@ jobs:
                     cd fe
                     yarn install
             -   name: Run Eslint
-                run: yarn eslint
+                run: |
+                    cd fe
+                    yarn eslint
             -   name: Run Prettier
-                run: yarn prettier
+                run: |
+                    cd fe
+                    yarn prettier
