@@ -28,7 +28,7 @@ jobs:
             -   name: Run Eslint
                 run: |
                     cd fe
-                    yarn eslint
+                    yarn eslint --max-warnings 0
             -   name: Run Prettier
                 run: |
                     cd fe
