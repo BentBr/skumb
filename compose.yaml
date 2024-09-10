@@ -1,6 +1,6 @@
 services:
     node:
-        image: node:20-alpine
+        image: node:22-alpine
         command: sh -c "cd /var/www/html/ && npm install && npm run dev && tail -f /dev/null" # preventing it from stopping again
         volumes:
             - ./fe:/var/www/html
