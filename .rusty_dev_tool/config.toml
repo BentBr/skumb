@@ -52,6 +52,10 @@ no_docker_compose = false
         alias = "lint"
         execution = "docker compose exec node yarn eslint --max-warnings 0 && docker compose exec node yarn prettier"
         description = "Running all linters"
+    [commands.machete]
+        alias = "machete"
+        execution = "docker run -v $(pwd):/src ghcr.io/bnjbvr/cargo-machete:latest"
+        description = "Checking for unused dependencies"
 
 # Mandatory node
 [environments]
