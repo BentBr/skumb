@@ -6,17 +6,30 @@
                     <v-card-title>
                         <p>
                             <span v-if="!isActive">
-                                <v-icon color="red" class="sm-2"> mdi-circle-small </v-icon>
+                                <v-icon
+                                    color="red"
+                                    class="sm-2"
+                                >
+                                    mdi-circle-small
+                                </v-icon>
                                 <small>Your chat is inactive</small>
                             </span>
                             <span v-else>
-                                <v-icon color="green" class="sm-2"> mdi-circle-small </v-icon>
+                                <v-icon
+                                    color="green"
+                                    class="sm-2"
+                                >
+                                    mdi-circle-small
+                                </v-icon>
                             </span>
                         </p>
                     </v-card-title>
                     <v-card-text>
                         <div class="chat-window">
-                            <transition-group name="fade" tag="div">
+                            <transition-group
+                                name="fade"
+                                tag="div"
+                            >
                                 <div
                                     v-for="msg in chatStore.messages"
                                     :key="msg.user_id + msg.text"
@@ -47,7 +60,12 @@
                                 :disabled="!isActive"
                                 @keyup.enter="send"
                             ></v-text-field>
-                            <v-btn icon="" color="primary" :disabled="!isActive" @click="send">
+                            <v-btn
+                                icon=""
+                                color="primary"
+                                :disabled="!isActive"
+                                @click="send"
+                            >
                                 <v-icon>mdi-send</v-icon>
                             </v-btn>
                         </div>

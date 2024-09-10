@@ -1,25 +1,26 @@
 {
-  "printWidth": 120,
-  "tabWidth": 4,
-  "semi": false,
-  "singleQuote": true,
-  "vueIndentScriptAndStyle": true,
-  "bracketSameLine": false,
-  "overrides": [
-    {
-      "files": "*.scss",
-      "options": {
-        "singleQuote": false,
-        "tabWidth": 4
-      }
-    },
-    {
-      "files": "*.{js,vue,html}",
-      "options": {
-        "semi": false,
-        "singleQuote": true,
-        "tabWidth": 4
-      }
-    }
-  ]
+    "printWidth": 120,
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true,
+    "vueIndentScriptAndStyle": true,
+    "bracketSameLine": false,
+    "singleAttributePerLine": true,
+    "overrides": [
+        {
+            "files": "*.scss",
+            "options": {
+                "singleQuote": false,
+                "tabWidth": 4
+            }
+        },
+        {
+            "files": "*.{js,vue,html}",
+            "options": {
+                "semi": false,
+                "singleQuote": true,
+                "tabWidth": 4
+            }
+        }
+    ]
 }
