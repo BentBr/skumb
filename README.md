@@ -24,3 +24,15 @@ Todos:
 - add chat entity
 - add BE chat uri + web transport connection
 - add auth layer to endpoints (current an auth user can query all endpoints)
+
+
+## Building Dockerfiles
+### BE
+`docker build -t skumb .` \
+`docker run --env-file .env -p 9123:9123 -p 9124:9124 skumb`
+
+### FE
+`cd fe` \
+`docker build -t skumb-fe .` \
+`docker run -p 81:80 skumb-fe`
+
