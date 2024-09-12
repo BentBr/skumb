@@ -16,14 +16,12 @@ export const useChatStore = defineStore('chat', () => {
     let connections = reactive({ currentChat: [], otherSides: [] })
     let connectionStatus = ref(ConnectionStatus.INACTIVE)
 
-    function getChatPath(chat_uuid) {
-        // Todo: make this dynamic
-        return 'ws://localhost:912' + (chat_uuid ? `4/ws/${chat_uuid}` : '5/ws')
+    function getChatWsPath(chat_uuid) {
+        return `${import.meta.env.VITE_WS_PROTOCOL}://${import.meta.env.VITE_API_URL}/ws/${chat_uuid}`
     }
 
     function getChatUuidPath() {
-        // Todo: make this localhost dynamic
-        return 'http://localhost:9123/v1/chat/uuid'
+        return `${import.meta.env.VITE_HTTP_PROTOCOL}://${import.meta.env.VITE_API_URL}/v1/chat/uuid`
     }
 
     function connect() {
@@ -31,7 +29,7 @@ export const useChatStore = defineStore('chat', () => {
             return
         }
 
-        ws.value = new WebSocket(getChatPath(chat_uuid.value))
+        ws.value = new WebSocket(getChatWsPath(chat_uuid.value))
 
         ws.value.onmessage = async (event) => {
             handleWsMessage(event)
