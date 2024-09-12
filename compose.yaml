@@ -1,7 +1,7 @@
 services:
     node:
         image: node:22-alpine
-        command: sh -c "cd /var/www/html/ && npm install && npm run dev && tail -f /dev/null" # preventing it from stopping again
+        command: sh -c "cd /var/www/html/ && yarn install && yarn dev && tail -f /dev/null" # preventing it from stopping again
         volumes:
             - ./fe:/var/www/html
         working_dir: /var/www/html/
