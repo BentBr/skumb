@@ -22,7 +22,7 @@ no_docker_compose = false
         description = "Testing and creating coverage report"
     [commands.start]
         alias = "start"
-        execution = "docker compose up -d && source .env && SENTRY_DSN=$SENTRY_DSN SENTRY_SAMPLE_RATE=$SENTRY_SAMPLE_RATE DATABASE_URL=$DATABASE_URL MAX_DATABASE_CONNECTIONS=$MAX_DATABASE_CONNECTIONS APP_SECRET=$APP_SECRET SESSION_LIFETIME=$SESSION_LIFETIME REDIS_DSN=$REDIS_DSN cargo run"
+        execution = "docker compose up -d && source .env && LOCAL_BE_PORT=$LOCAL_BE_PORT SENTRY_DSN=$SENTRY_DSN SENTRY_SAMPLE_RATE=$SENTRY_SAMPLE_RATE DATABASE_URL=$DATABASE_URL MAX_DATABASE_CONNECTIONS=$MAX_DATABASE_CONNECTIONS APP_SECRET=$APP_SECRET SESSION_LIFETIME=$SESSION_LIFETIME REDIS_DSN=$REDIS_DSN cargo run"
         description = "Starting webserver with env vars"
     [commands.migration]
         alias = "migration"

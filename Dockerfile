@@ -29,8 +29,7 @@ WORKDIR /usr/local/bin
 COPY --from=builder /usr/src/app/target/release/skumb .
 
 # Expose the port for the webserver and websocket
-EXPOSE 9123
-EXPOSE 9124
+EXPOSE 443
 
 # Run the binary
 CMD ["./skumb"]

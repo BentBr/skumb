@@ -13,7 +13,6 @@ use actix_cors::Cors;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
-use futures::future::try_join3;
 use std::env;
 use uuid::Uuid;
 
@@ -23,23 +22,9 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let server1 = HttpServer::new(|| {
-        // Handling CORS issues
-        let cors = Cors::default().allow_any_origin().allow_any_header().allow_any_method();
+    let chat_server = ws_actor::ChatServer::new().start();
 
-        // Returning the app
-        App::new()
-            .configure(views::factory)
-            .wrap(cors)
-            .wrap(Logger::new("%a %{User-Agent}i %r %s %D"))
-    })
-    .bind("0.0.0.0:9123")?
-    .workers(1)
-    .run();
-
-    let chat_server1 = ws_actor::ChatServer::new().start();
-
-    let server2 = HttpServer::new(move || {
+    let server = HttpServer::new(move || {
         // Handling CORS issues
         let cors = Cors::default().allow_any_origin().allow_any_header().allow_any_method();
 
@@ -47,27 +32,17 @@ async fn main() -> std::io::Result<()> {
             // todo: handle auth here
             .wrap(Logger::new("%a %{User-Agent}i %r %s %D"))
             .wrap(cors)
-            .app_data(web::Data::new(chat_server1.clone()))
+            .app_data(web::Data::new(chat_server.clone()))
+            // Websocket in general
             .service(web::resource("/ws/{chat_uuid}").route(web::get().to(ws_index)))
+            // Api routes
+            .configure(views::factory)
     })
-    .bind("0.0.0.0:9124")?
+    .bind(get_local_port_address())?
     .workers(1)
     .run();
 
-    let chat_server2 = ws_actor::ChatServer::new().start();
-
-    let server3 = HttpServer::new(move || {
-        App::new()
-            // todo: handle auth here
-            .wrap(Logger::new("%a %{User-Agent}i %r %s %D"))
-            .app_data(web::Data::new(chat_server2.clone()))
-            .service(web::resource("/ws").route(web::get().to(ws_index)))
-    })
-    .bind("0.0.0.0:9125")?
-    .workers(1)
-    .run();
-
-    try_join3(server1, server2, server3).await?;
+    server.await?;
     Ok(())
 }
 
@@ -107,4 +82,10 @@ async fn ws_index(
         &request,
         stream,
     )
+}
+
+fn get_local_port_address() -> String {
+    let port = env::var("LOCAL_BE_PORT").expect("LOCAL_BE_PORT not set");
+
+    format!("0.0.0.0:{port}")
 }
