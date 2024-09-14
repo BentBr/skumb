@@ -36,3 +36,16 @@ Todos:
 `docker build -t skumb-fe .` \
 `docker run -p 81:80 skumb-fe`
 
+
+
+## AWS manual deployment of new (backend) Docker image:
+
+Authenticate Docker to your ECR \
+`aws ecr get-login-password --profile rust --region eu-central-1 | docker login --username AWS --password-stdin 767398008502.dkr.ecr.eu-central-1.amazonaws.com` \
+(ask for rust profile in aws creds helper)
+
+Build and push your Docker image \
+Building: `docker build -t skumb .` \
+Tagging: `docker tag skumb:latest 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:latest` \
+Pushing: `docker push 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:latest`
+

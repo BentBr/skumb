@@ -29,7 +29,10 @@ WORKDIR /usr/local/bin
 COPY --from=builder /usr/src/app/target/release/skumb .
 
 # Expose the port for the webserver and websocket
-EXPOSE 443
+EXPOSE 9123
+
+HEALTHCHECK CMD curl -f http://localhost:9123/health || exit 1
 
 # Run the binary
 CMD ["./skumb"]
+
