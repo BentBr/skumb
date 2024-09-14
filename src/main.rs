@@ -8,6 +8,8 @@ mod views;
 mod ws_actor;
 
 use crate::helpers::env::get_float;
+use crate::json_serialization::response::item::Item as ResponseItem;
+use crate::json_serialization::response::status::Status;
 use actix::{Actor, Addr};
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
@@ -36,6 +38,7 @@ async fn main() -> std::io::Result<()> {
             // Websocket in general
             .service(web::resource("/ws/{chat_uuid}").route(web::get().to(ws_index)))
             // Api routes
+            .service(web::resource("/health").route(web::get().to(health)))
             .configure(views::factory)
     })
     .bind(get_local_port_address())?
@@ -82,6 +85,19 @@ async fn ws_index(
         &request,
         stream,
     )
+}
+
+#[allow(clippy::future_not_send)]
+async fn health() -> Result<HttpResponse, actix_web::Error> {
+    let test_uuid = Uuid::new_v4();
+
+    let response = HttpResponse::Ok().json(ResponseItem::new(
+        Status::Success,
+        "Is healthy".to_string(),
+        format!("Health check at {} with id: {}", chrono::Utc::now(), test_uuid),
+    ));
+
+    Ok(response)
 }
 
 fn get_local_port_address() -> String {
