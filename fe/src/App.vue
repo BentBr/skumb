@@ -14,7 +14,7 @@
         />
 
         <div class="wrapper">
-            <HelloWorld msg="You did it!" />
+            <HelloWorld msg="You did it!" data="uaeuiae" />
 
             <nav>
                 <RouterLink to="/">Home</RouterLink>

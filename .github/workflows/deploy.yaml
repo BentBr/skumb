@@ -90,13 +90,6 @@ jobs:
                     cd fe
                     yarn build
 
-            # Install AWS CLI
-            -   name: Install AWS CLI
-                run: |
-                    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                    unzip awscliv2.zip
-                    sudo ./aws/install
-
             # Sync the built frontend assets with S3
             -   name: Deploy frontend to S3
                 run: |
