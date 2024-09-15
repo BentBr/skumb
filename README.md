@@ -38,7 +38,7 @@ Todos:
 
 
 
-## AWS manual deployment of new (backend) Docker image:
+## AWS manual deployment of new (backend) Docker image
 
 Authenticate Docker to your ECR \
 `aws ecr get-login-password --profile rust --region eu-central-1 | docker login --username AWS --password-stdin 767398008502.dkr.ecr.eu-central-1.amazonaws.com` \
@@ -49,3 +49,10 @@ Building: `docker build -t skumb .` \
 Tagging: `docker tag skumb:latest 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:latest` \
 Pushing: `docker push 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:latest`
 
+## AWS manual deployment of new (frontend) assets (S3 static hosting)
+
+Build new assets \
+`docker compose run --rm -e VITE_API_URL=api.skumb.eu -e VITE_HTTP_PROTOCOL=https -e VITE_WS_PROTOCOL=wss node yarn build`
+
+Pushing to S3 \
+`aws s3 sync fe/dist s3://skumb.eu --profile rust`
