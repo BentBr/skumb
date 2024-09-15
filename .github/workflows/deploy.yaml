@@ -5,9 +5,9 @@ on:
         types:
             - success
         branches: [ main ]
-        push:
-            branches:
-                - main
+    push:
+        branches:
+            - main
 
 env:
     CARGO_TERM_COLOR: always
