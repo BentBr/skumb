@@ -1,0 +1,106 @@
+name: Deploy Backend and Frontend
+on:
+    workflow_run:
+        workflows: [ "Test Code Rust BE", "Test Code Vue FE" ]
+        branches: [ main ]
+        types:
+            - completed
+        when: never
+env:
+    CARGO_TERM_COLOR: always
+
+jobs:
+    build-and-deploy-backend:
+        runs-on: ubuntu-latest
+
+        steps:
+            # Checkout the code from the repo
+            -   name: Checkout code
+                uses: actions/checkout@v4
+
+            # Log in to AWS ECR
+            -   name: Log in to Amazon ECR
+                id: login-ecr
+                uses: aws-actions/amazon-ecr-login@v1
+
+            # Build the Docker image for ARM architecture
+            -   name: Build Docker image
+                run: |
+                    docker buildx create --use
+                    docker buildx build --platform linux/arm64 -t skumb:latest . --push \
+                      --tag 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:latest
+
+            # Deploy the backend to ECS
+            -   name: Deploy to Amazon ECS
+                uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+                with:
+                    cluster: Skumb
+                    service: skumb-backend
+                    task-definition: skumb-run-backend
+                    container-name: skumb-backend
+                    image: 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:latest
+                env:
+                    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                    AWS_REGION: eu-central-1
+
+    build-and-deploy-frontend:
+        runs-on: ubuntu-latest
+        needs: build-and-deploy-backend
+
+        steps:
+            # Checkout the code from the repo
+            -   name: Checkout code
+                uses: actions/checkout@v4
+
+            # Install Node.js and Yarn for building the frontend
+            -   name: Set up Node.js
+                uses: actions/setup-node@v3
+                with:
+                    node-version: '22'
+
+            # Cache node_modules for faster builds
+            -   name: Cache node_modules
+                uses: actions/cache@v3
+                with:
+                    path: node_modules
+                    key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+                    restore-keys: |
+                        ${{ runner.os }}-node-
+
+            # Install dependencies
+            -   name: Install dependencies
+                run: |
+                    cd fe
+                    yarn install
+
+            # Build the frontend assets
+            -   name: Build frontend
+                run: |
+                    cd fe
+                    yarn build
+
+            # Install AWS CLI
+            -   name: Install AWS CLI
+                run: |
+                    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                    unzip awscliv2.zip
+                    sudo ./aws/install
+
+            # Sync the built frontend assets with S3
+            -   name: Deploy frontend to S3
+                run: |
+                    aws s3 sync fe/dist s3://skumb.eu --delete
+                env:
+                    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                    AWS_REGION: eu-central-1
+
+            # Invalidate CloudFront (optional, for cache clearing)
+            -   name: Invalidate CloudFront cache
+                run: |
+                    aws cloudfront create-invalidation --distribution-id EJ5ATN9KG4YOI --paths "/*"
+                env:
+                    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                    AWS_REGION: eu-central-1
