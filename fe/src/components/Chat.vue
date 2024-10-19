@@ -6,13 +6,17 @@
                     <v-card-title>
                         <p>
                             <span v-if="!isActive">
+                                <Snackbar ref="snackbarRef" />
                                 <v-icon
                                     color="red"
                                     class="sm-2"
                                 >
                                     mdi-circle-small
                                 </v-icon>
-                                <small>Your chat is inactive</small>
+                                <small>
+                                    Your chat is inactive share it!
+                                    <v-icon @click="copyUri">mdi-share-variant</v-icon></small
+                                >
                             </span>
                             <span v-else>
                                 <v-icon
@@ -78,15 +82,16 @@
 
 <script>
     import { computed, onMounted, onUnmounted, ref } from 'vue'
-    import { useRoute } from 'vue-router'
+    import { useRoute, onBeforeRouteLeave } from 'vue-router'
     import { useChatStore } from '../stores/chat'
     import ConnectionStatus from '../stores/models/connectionStatus'
+    import Snackbar from './Snackbar.vue'
 
     export default {
-        beforeRouteLeave(to, from, next) {
-            this.chatStore.disconnect()
-            next()
+        components: {
+            Snackbar,
         },
+
         setup() {
             const route = useRoute()
             const chat_uuid = ref(route.params.chat_uuid) // Access the uuid parameter from the route
@@ -95,6 +100,7 @@
             const text = ref('')
             const message_sent_at = ref('')
             const usernameEntered = ref(false)
+            const snackbarRef = ref(null) // Create a ref for Snackbar
 
             onMounted(() => {
                 if (chat_uuid.value) {
@@ -152,6 +158,45 @@
                 return chatStore.connectionStatus === ConnectionStatus.ACTIVE
             })
 
+            const copyUri = () => {
+                const uri = chatStore.getChatPath()
+
+                // Modern approach
+                if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard
+                        .writeText(uri)
+                        .then(() => {
+                            console.log('URI copied to clipboard:', uri)
+                            snackbarRef.value.showSnackbar('URI copied to clipboard')
+                        })
+                        .catch((err) => {
+                            console.error('Failed to copy URI:', err)
+                        })
+                } else {
+                    // Fallback method
+                    const textArea = document.createElement('textarea')
+                    textArea.value = uri
+                    document.body.appendChild(textArea)
+                    textArea.select()
+                    try {
+                        document.execCommand('copy')
+                        console.log('URI copied to clipboard:', uri)
+                        snackbarRef.value.showSnackbar('URI copied to clipboard')
+                    } catch (err) {
+                        console.error('Failed to copy URI:', err)
+                    }
+                    document.body.removeChild(textArea)
+                }
+            }
+
+            onBeforeRouteLeave((to, from, next) => {
+                if (from.name === 'shared chat') {
+                    chatStore.disconnect()
+                }
+
+                next()
+            })
+
             return {
                 usernameEntered,
                 chatStore,
@@ -162,6 +207,8 @@
                 onUsernameEnter,
                 send,
                 createDateString,
+                copyUri,
+                snackbarRef,
             }
         },
     }

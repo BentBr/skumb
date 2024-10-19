@@ -16,12 +16,16 @@ export const useChatStore = defineStore('chat', () => {
     let connections = reactive({ currentChat: [], otherSides: [] })
     let connectionStatus = ref(ConnectionStatus.INACTIVE)
 
-    function getChatWsPath(chat_uuid) {
-        return `${import.meta.env.VITE_WS_PROTOCOL}://${import.meta.env.VITE_API_URL}/ws/${chat_uuid}`
+    function getChatWsPath() {
+        return `${import.meta.env.VITE_WS_PROTOCOL}://${import.meta.env.VITE_API_URL}/ws/${chat_uuid.value}`
     }
 
-    function getChatUuidPath() {
+    function getChatUuidApiPath() {
         return `${import.meta.env.VITE_HTTP_PROTOCOL}://${import.meta.env.VITE_API_URL}/v1/chat/uuid`
+    }
+
+    function getChatPath() {
+        return `${import.meta.env.VITE_HTTP_PROTOCOL}://${import.meta.env.VITE_URL}/chat/${chat_uuid.value}`
     }
 
     function connect() {
@@ -29,7 +33,7 @@ export const useChatStore = defineStore('chat', () => {
             return
         }
 
-        ws.value = new WebSocket(getChatWsPath(chat_uuid.value))
+        ws.value = new WebSocket(getChatWsPath())
 
         ws.value.onmessage = async (event) => {
             handleWsMessage(event)
@@ -190,7 +194,7 @@ export const useChatStore = defineStore('chat', () => {
 
     const fetchChatUuid = async () => {
         try {
-            const response = await fetch(getChatUuidPath())
+            const response = await fetch(getChatUuidApiPath())
             if (!response.ok) {
                 console.error('Network response was not ok for uuid fetching: ', response.status)
             }
@@ -215,5 +219,6 @@ export const useChatStore = defineStore('chat', () => {
         disconnect,
         sendMessage,
         fetchChatUuid,
+        getChatPath,
     }
 })

@@ -16,6 +16,7 @@ import {
     VIcon,
     VTextField,
     VExpandTransition,
+    VSnackbar,
 } from 'vuetify/components'
 import { VFadeTransition } from 'vuetify/components/transitions'
 
@@ -35,6 +36,7 @@ const vuetify = createVuetify({
         VTextField,
         VExpandTransition,
         VFadeTransition,
+        VSnackbar,
     },
 })
 

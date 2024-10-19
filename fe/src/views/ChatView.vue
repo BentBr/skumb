@@ -6,7 +6,7 @@
     <div class="chat">
         <h1>Chat</h1>
 
-        <!-- Suspense component to show to do items  -->
+        <!-- Suspense component to show the  -->
         <Suspense>
             <template #fallback>
                 <div>loading</div>
