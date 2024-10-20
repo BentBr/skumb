@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { nextTick, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref } from 'vue'
 import ChatMessage from './models/chatMessage'
 import Connection from './models/connection'
 import ConnectionStatus from './models/connectionStatus'
@@ -209,12 +209,17 @@ export const useChatStore = defineStore('chat', () => {
         }
     }
 
+    const isActive = computed(() => {
+        return connectionStatus.value === ConnectionStatus.ACTIVE
+    })
+
     return {
         messages,
         user_id,
         chat_uuid,
         connections,
         connectionStatus,
+        isActive,
         connect,
         disconnect,
         sendMessage,

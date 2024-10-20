@@ -17,6 +17,14 @@ import {
     VTextField,
     VExpandTransition,
     VSnackbar,
+    VAvatar,
+    VSpacer,
+    VTab,
+    VTabs,
+    VAppBar,
+    VSheet,
+    VMain,
+    VApp,
 } from 'vuetify/components'
 import { VFadeTransition } from 'vuetify/components/transitions'
 
@@ -37,6 +45,14 @@ const vuetify = createVuetify({
         VExpandTransition,
         VFadeTransition,
         VSnackbar,
+        VAvatar,
+        VSpacer,
+        VTab,
+        VTabs,
+        VAppBar,
+        VSheet,
+        VMain,
+        VApp,
     },
 })
 

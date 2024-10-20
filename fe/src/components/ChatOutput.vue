@@ -1,12 +1,79 @@
-<script setup></script>
+<script>
+    import { nextTick, ref, watch } from 'vue'
+    import { useChatStore } from '../stores/chat'
+
+    export default {
+        setup() {
+            const chatStore = useChatStore()
+            const text = ref('')
+            const message_sent_at = ref('')
+            const usernameEntered = ref(false)
+            const chatWindow = ref(null)
+
+            watch(
+                () => chatStore.messages,
+                () => {
+                    scrollToBottom()
+                },
+                { deep: true },
+            )
+
+            const createDateString = (dateString) => {
+                const date = new Date(dateString)
+                const options = { hour: '2-digit', minute: '2-digit' }
+
+                return new Intl.DateTimeFormat('default', options).format(date)
+            }
+
+            const scrollToBottom = () => {
+                nextTick(() => {
+                    if (chatWindow.value) {
+                        chatWindow.value.scrollTop = chatWindow.value.scrollHeight
+                    }
+                })
+            }
+
+            return {
+                usernameEntered,
+                chatStore,
+                message_sent_at,
+                text,
+                chatWindow,
+                createDateString,
+            }
+        },
+    }
+</script>
 
 <template>
-    <div>I'm your chat output</div>
+    <div class="chat-output flex-grow-1">
+        <transition-group
+            name="fade"
+            tag="div"
+        >
+            <div
+                v-for="msg in chatStore.messages"
+                :key="msg.user_id + msg.text"
+                class="chat-message text-grey-darken-4"
+            >
+                <small>{{ createDateString(msg.message_sent_at) }}</small
+                >&nbsp;
+                <strong>{{ msg.user_id }}:</strong>
+                {{ msg.text }}
+            </div>
+        </transition-group>
+    </div>
 </template>
 
 <style scoped>
-    hr {
-        margin-bottom: 20px;
-        margin-top: 40px;
+    .chat-output {
+        overflow-y: auto;
+        background-color: #f5f5f5;
+        padding: 15px 15px 0 15px;
+        border-radius: 8px;
+    }
+
+    .chat-message {
+        margin-bottom: 10px;
     }
 </style>
