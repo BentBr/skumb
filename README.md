@@ -56,3 +56,25 @@ Build new assets \
 
 Pushing to S3 \
 `aws s3 sync fe/dist s3://skumb.eu --profile rust`
+
+MISSING: Invalidate Cloudfront cache
+
+
+Todos:
+- pretty fe
+  - new chat (from existing)
+    (routing strategy?)
+  - container size mobile
+  - content
+  - colours + styling
+  - ~~chat scrolls to bottom~~
+- CI for BE + FE (remember the base uri)
+  - adding cloudfront invalidation
+  - fixing pipelines in general
+- Functions
+  - auth with stored chats
+  - different chat levels
+    - 1:1
+    - 1:1 stored
+    - chat with email for account holder (entity)
+- Multi lang with i18n
