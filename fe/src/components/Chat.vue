@@ -29,7 +29,7 @@
                         </p>
                     </v-card-title>
                     <v-card-text>
-                        <div class="chat-window">
+                        <div class="chat-window" ref="chatWindow">
                             <transition-group
                                 name="fade"
                                 tag="div"
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-    import { computed, onMounted, onUnmounted, ref } from 'vue'
+import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
     import { useRoute, onBeforeRouteLeave } from 'vue-router'
     import { useChatStore } from '../stores/chat'
     import ConnectionStatus from '../stores/models/connectionStatus'
@@ -100,7 +100,8 @@
             const text = ref('')
             const message_sent_at = ref('')
             const usernameEntered = ref(false)
-            const snackbarRef = ref(null) // Create a ref for Snackbar
+            const snackbarRef = ref(null)
+            const chatWindow = ref(null);
 
             onMounted(() => {
                 if (chat_uuid.value) {
@@ -110,6 +111,22 @@
                     chatStore.fetchChatUuid()
                 }
             })
+
+            onUnmounted(() => {
+                disconnect()
+            })
+
+            onBeforeRouteLeave((to, from, next) => {
+                if (from.name === 'shared chat') {
+                    chatStore.disconnect()
+                }
+
+                next()
+            })
+
+            watch(() => chatStore.messages, () => {
+                scrollToBottom();
+            }, { deep: true });
 
             const onUsernameBlur = () => {
                 if (chatStore.user_id.trim() !== '') {
@@ -130,10 +147,6 @@
             const disconnect = () => {
                 chatStore.disconnect()
             }
-
-            onUnmounted(() => {
-                disconnect()
-            })
 
             const send = () => {
                 if (text.value.trim() === '' || chatStore.user_id.trim() === '') {
@@ -189,13 +202,13 @@
                 }
             }
 
-            onBeforeRouteLeave((to, from, next) => {
-                if (from.name === 'shared chat') {
-                    chatStore.disconnect()
-                }
-
-                next()
-            })
+            const scrollToBottom = () => {
+                nextTick(() => {
+                    if (chatWindow.value) {
+                        chatWindow.value.scrollTop = chatWindow.value.scrollHeight;
+                    }
+                });
+            };
 
             return {
                 usernameEntered,
@@ -203,12 +216,13 @@
                 message_sent_at,
                 text,
                 isActive,
+                snackbarRef,
+                chatWindow,
                 onUsernameBlur,
                 onUsernameEnter,
                 send,
                 createDateString,
                 copyUri,
-                snackbarRef,
             }
         },
     }
@@ -219,7 +233,7 @@
         height: 400px;
         overflow-y: auto;
         background-color: #f5f5f5;
-        padding: 15px;
+        padding: 15px 15px 0 15px;
         border-radius: 8px;
     }
 
