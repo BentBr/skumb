@@ -1,7 +1,7 @@
 <template>
-    <v-container>
+    <v-container :class="{ 'mobile-chat': isMobile}">
         <v-row>
-            <v-col>
+            <v-col :class="{ 'mobile-chat': isMobile }">
                 <v-card class="pa-5">
                     <v-card-title>
                         <p>
@@ -210,6 +210,8 @@ import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
                 });
             };
 
+            const isMobile = computed(() => window.innerWidth <= 768);
+
             return {
                 usernameEntered,
                 chatStore,
@@ -218,6 +220,7 @@ import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
                 isActive,
                 snackbarRef,
                 chatWindow,
+                isMobile,
                 onUsernameBlur,
                 onUsernameEnter,
                 send,
@@ -255,5 +258,11 @@ import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
         h1 {
             font-size: 0.5rem;
         }
+    }
+
+    .mobile-chat {
+        border: none;
+        padding: 0;
+        width: 100%;
     }
 </style>
