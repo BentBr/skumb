@@ -1,6 +1,6 @@
 <script>
     import { nextTick, ref, watch } from 'vue'
-    import { useChatStore } from '../stores/chat'
+    import { useChatStore } from '../../stores/chat'
 
     export default {
         setup() {

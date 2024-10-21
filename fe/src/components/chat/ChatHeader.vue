@@ -1,14 +1,14 @@
 <script>
     import { ref } from 'vue'
-    import { useChatStore } from '../stores/chat'
-    import Snackbar from './Snackbar.vue'
+    import { useChatStore } from '../../stores/chat'
+    import Snackbar from '../utils/Snackbar.vue'
 
     export default {
         components: { Snackbar },
         setup() {
             const snackbarMessage = 'Link copied to clipboard'
             const snackbarFailMessage = 'Failed to copy URI: '
-            const snackbarRef = ref(null)
+            const snackbarCopyHintRef = ref(null)
             const chatStore = useChatStore()
 
             const copyUri = () => {
@@ -20,7 +20,7 @@
                         .writeText(uri)
                         .then(() => {
                             console.log(snackbarMessage + ': ', uri)
-                            snackbarRef.value.showSnackbar(snackbarMessage)
+                            snackbarCopyHintRef.value.showSnackbar(snackbarMessage)
                         })
                         .catch((err) => {
                             console.error(snackbarFailMessage, err)
@@ -34,7 +34,7 @@
                     try {
                         document.execCommand('copy')
                         console.log(snackbarMessage + ': ', uri)
-                        snackbarRef.value.showSnackbar(snackbarMessage)
+                        snackbarCopyHintRef.value.showSnackbar(snackbarMessage)
                     } catch (err) {
                         console.error(snackbarFailMessage, err)
                     }
@@ -44,7 +44,7 @@
 
             return {
                 copyUri,
-                snackbarRef,
+                snackbarCopyHintRef,
                 chatStore,
             }
         },
@@ -53,7 +53,7 @@
 
 <template>
     <Snackbar
-        ref="snackbarRef"
+        ref="snackbarCopyHintRef"
         style="padding: 0"
     />
 

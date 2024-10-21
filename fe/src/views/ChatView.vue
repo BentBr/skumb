@@ -2,22 +2,25 @@
     import { onMounted, onUnmounted, ref } from 'vue'
     import { useRoute, onBeforeRouteLeave } from 'vue-router'
     import { useChatStore } from '../stores/chat'
-    import ChatInput from '../components/ChatInput.vue'
-    import ChatOutput from '../components/ChatOutput.vue'
-    import ChatHeader from '../components/ChatHeader.vue'
+    import ChatInput from '../components/chat/ChatInput.vue'
+    import ChatOutput from '../components/chat/ChatOutput.vue'
+    import ChatHeader from '../components/chat/ChatHeader.vue'
     import Routes from '../router/routes'
+    import Snackbar from '../components/utils/Snackbar.vue'
 
     export default {
-        components: { ChatHeader, ChatOutput, ChatInput },
+        components: { Snackbar, ChatHeader, ChatOutput, ChatInput },
         setup() {
+            const snackbarMessage = 'Created a new chat'
+
             const route = useRoute()
             const chat_uuid = ref(route.params.chat_uuid) // Access the uuid parameter from the route
-
             const chatStore = useChatStore()
             const text = ref('')
             const message_sent_at = ref('')
             const usernameEntered = ref(false)
             const chatWindow = ref(null)
+            const snackbarUpdatedChatRef = ref(null)
 
             onMounted(() => {
                 if (chat_uuid.value) {
@@ -39,6 +42,7 @@
 
                 if (to.name === Routes.CHAT) {
                     chatStore.fetchChatUuid()
+                    snackbarUpdatedChatRef.value.showSnackbar(snackbarMessage)
                 }
 
                 next()
@@ -50,6 +54,7 @@
                 message_sent_at,
                 text,
                 chatWindow,
+                snackbarUpdatedChatRef,
             }
         },
     }
@@ -75,6 +80,11 @@
             <chat-input />
         </v-col>
     </v-row>
+
+    <Snackbar
+        ref="snackbarUpdatedChatRef"
+        style="padding: 0"
+    />
 </template>
 
 <style></style>
