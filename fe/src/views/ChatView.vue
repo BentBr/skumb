@@ -57,20 +57,20 @@
 <template>
     <v-row
         class="d-flex flex-column"
-        style="height: calc(100vh - 48px); overflow: hidden"
+        style="height: calc(100vh - 60px)"
     >
         <v-col
             cols="12"
-            md="8"
-            lg="6"
             class="mx-auto d-flex flex-column"
             style="overflow: hidden"
         >
             <chat-header />
-            <chat-output
-                class="flex-grow-1"
-                style="overflow-y: hidden"
-            />
+            <div
+                class="chat-container flex-grow-1 d-flex flex-column"
+                style="overflow-y: auto"
+            >
+                <chat-output class="flex-grow-1" />
+            </div>
             <chat-input />
         </v-col>
     </v-row>

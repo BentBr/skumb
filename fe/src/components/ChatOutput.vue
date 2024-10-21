@@ -28,6 +28,7 @@
             const scrollToBottom = () => {
                 nextTick(() => {
                     if (chatWindow.value) {
+                        console.log(chatWindow.value.scrollTop)
                         chatWindow.value.scrollTop = chatWindow.value.scrollHeight
                     }
                 })
@@ -46,7 +47,10 @@
 </script>
 
 <template>
-    <div class="chat-output flex-grow-1">
+    <div
+        ref="chatWindow"
+        class="chat-output flex-grow-1"
+    >
         <transition-group
             name="fade"
             tag="div"
@@ -71,9 +75,11 @@
         background-color: #f5f5f5;
         padding: 15px 15px 0 15px;
         border-radius: 8px;
+        flex-grow: 1;
     }
 
     .chat-message {
         margin-bottom: 10px;
+        word-break: break-word; /* Add this line to break long words */
     }
 </style>
