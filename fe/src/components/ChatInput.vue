@@ -1,38 +1,14 @@
 <script>
-    import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-    import { useRoute, onBeforeRouteLeave } from 'vue-router'
+    import { nextTick, ref, watch } from 'vue'
     import { useChatStore } from '../stores/chat'
 
     export default {
         setup() {
-            const route = useRoute()
-            const chat_uuid = ref(route.params.chat_uuid) // Access the uuid parameter from the route
             const chatStore = useChatStore()
             const text = ref('')
             const message_sent_at = ref('')
             const usernameEntered = ref(false)
             const chatWindow = ref(null)
-
-            onMounted(() => {
-                if (chat_uuid.value) {
-                    chatStore.chat_uuid = chat_uuid.value
-                }
-                if (!chatStore.chat_uuid) {
-                    chatStore.fetchChatUuid()
-                }
-            })
-
-            onUnmounted(() => {
-                disconnect()
-            })
-
-            onBeforeRouteLeave((to, from, next) => {
-                if (from.name === 'shared chat') {
-                    chatStore.disconnect()
-                }
-
-                next()
-            })
 
             watch(
                 () => chatStore.messages,
@@ -58,10 +34,6 @@
                 }
             }
 
-            const disconnect = () => {
-                chatStore.disconnect()
-            }
-
             const send = () => {
                 if (text.value.trim() === '' || chatStore.user_id.trim() === '') {
                     return
@@ -82,15 +54,12 @@
                 })
             }
 
-            const isMobile = computed(() => window.innerWidth <= 768)
-
             return {
                 usernameEntered,
                 chatStore,
                 message_sent_at,
                 text,
                 chatWindow,
-                isMobile,
                 onUsernameBlur,
                 onUsernameEnter,
                 send,

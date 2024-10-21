@@ -5,6 +5,7 @@
     import ChatInput from '../components/ChatInput.vue'
     import ChatOutput from '../components/ChatOutput.vue'
     import ChatHeader from '../components/ChatHeader.vue'
+    import Routes from '../router/routes'
 
     export default {
         components: { ChatHeader, ChatOutput, ChatInput },
@@ -28,20 +29,20 @@
             })
 
             onUnmounted(() => {
-                disconnect()
+                chatStore.disconnect()
             })
 
             onBeforeRouteLeave((to, from, next) => {
-                if (from.name === 'shared chat') {
+                if (from.name === Routes.SHARED_CHAT) {
                     chatStore.disconnect()
+                }
+
+                if (to.name === Routes.CHAT) {
+                    chatStore.fetchChatUuid()
                 }
 
                 next()
             })
-
-            const disconnect = () => {
-                chatStore.disconnect()
-            }
 
             return {
                 usernameEntered,
