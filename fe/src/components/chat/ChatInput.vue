@@ -1,13 +1,17 @@
 <script>
-    import { nextTick, ref, watch } from 'vue'
+    import { computed, nextTick, ref, watch } from 'vue'
     import { useChatStore } from '../../stores/chat'
+    import { useI18n } from 'vue-i18n'
 
     export default {
         setup() {
+            const { t } = useI18n()
+            const usernameLabel = computed(() => t('chat.label.username'))
+            const messageLabel = computed(() => t('chat.label.message'))
+
             const chatStore = useChatStore()
             const text = ref('')
             const message_sent_at = ref('')
-            const usernameEntered = ref(false)
             const chatWindow = ref(null)
 
             watch(
@@ -20,7 +24,7 @@
 
             const onUsernameBlur = () => {
                 if (chatStore.user_id.trim() !== '') {
-                    usernameEntered.value = true
+                    chatStore.usernameEntered = true
                 }
 
                 chatStore.connect()
@@ -28,7 +32,7 @@
 
             const onUsernameEnter = () => {
                 if (chatStore.user_id.trim() !== '') {
-                    usernameEntered.value = true
+                    chatStore.usernameEntered = true
 
                     chatStore.connect()
                 }
@@ -41,8 +45,8 @@
                 chatStore.sendMessage(chatStore.user_id, text.value)
 
                 text.value = ''
-                if (!usernameEntered.value) {
-                    usernameEntered.value = true
+                if (!chatStore.usernameEntered) {
+                    chatStore.usernameEntered = true
                 }
             }
 
@@ -55,11 +59,12 @@
             }
 
             return {
-                usernameEntered,
                 chatStore,
                 message_sent_at,
                 text,
                 chatWindow,
+                usernameLabel,
+                messageLabel,
                 onUsernameBlur,
                 onUsernameEnter,
                 send,
@@ -77,9 +82,9 @@
             <v-col>
                 <v-expand-transition>
                     <v-text-field
-                        v-if="!usernameEntered"
+                        v-if="!chatStore.usernameEntered"
                         v-model="chatStore.user_id"
-                        label="Enter your username first"
+                        :label="usernameLabel"
                         class="mt-4"
                         variant="underlined"
                         @blur="onUsernameBlur"
@@ -94,7 +99,7 @@
                 <v-col>
                     <v-text-field
                         v-model="text"
-                        label="Message"
+                        :label="messageLabel"
                         class="flex-grow-1"
                         :disabled="!chatStore.isActive"
                         variant="underlined"

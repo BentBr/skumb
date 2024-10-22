@@ -1,4 +1,4 @@
-const ConnectionStatus = Object.freeze({
+const ConnectionStatusConstant = Object.freeze({
     CONNECTED: 'Connected',
     DISCONNECTED: 'Disconnected',
     STAYING_ALIVE: 'StayingAlive',
@@ -6,4 +6,4 @@ const ConnectionStatus = Object.freeze({
     INACTIVE: 'Inactive',
 })
 
-export default ConnectionStatus
+export default ConnectionStatusConstant

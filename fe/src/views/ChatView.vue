@@ -1,5 +1,5 @@
 <script>
-    import { onMounted, onUnmounted, ref } from 'vue'
+    import { computed, onMounted, onUnmounted, ref } from 'vue'
     import { useRoute, onBeforeRouteLeave } from 'vue-router'
     import { useChatStore } from '../stores/chat'
     import ChatInput from '../components/chat/ChatInput.vue'
@@ -7,18 +7,19 @@
     import ChatHeader from '../components/chat/ChatHeader.vue'
     import Routes from '../router/routes'
     import Snackbar from '../components/utils/Snackbar.vue'
+    import { useI18n } from 'vue-i18n'
 
     export default {
         components: { Snackbar, ChatHeader, ChatOutput, ChatInput },
         setup() {
-            const snackbarMessage = 'Created a new chat'
+            const { t } = useI18n()
+            const snackbarMessage = computed(() => t('chat.message.new-created'))
 
             const route = useRoute()
             const chat_uuid = ref(route.params.chat_uuid) // Access the uuid parameter from the route
             const chatStore = useChatStore()
             const text = ref('')
             const message_sent_at = ref('')
-            const usernameEntered = ref(false)
             const chatWindow = ref(null)
             const snackbarUpdatedChatRef = ref(null)
 
@@ -28,6 +29,7 @@
                 }
                 if (!chatStore.chat_uuid) {
                     chatStore.fetchChatUuid()
+                    chatStore.usernameEntered = false
                 }
             })
 
@@ -43,13 +45,13 @@
                 if (to.name === Routes.CHAT) {
                     chatStore.fetchChatUuid()
                     snackbarUpdatedChatRef.value.showSnackbar(snackbarMessage)
+                    chatStore.usernameEntered = false
                 }
 
                 next()
             })
 
             return {
-                usernameEntered,
                 chatStore,
                 message_sent_at,
                 text,

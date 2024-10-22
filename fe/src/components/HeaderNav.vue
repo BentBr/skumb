@@ -1,9 +1,10 @@
 <script>
     import { defineComponent, onMounted, ref, watch } from 'vue'
     import { RouterLink, useRoute } from 'vue-router'
+    import LanguageButton from './utils/LanguageButton.vue'
 
     export default defineComponent({
-        components: { RouterLink },
+        components: { LanguageButton, RouterLink },
         setup() {
             const route = useRoute()
             const selectedTab = ref('')
@@ -52,6 +53,8 @@
             </v-tabs>
         </nav>
         <v-spacer></v-spacer>
+
+        <LanguageButton />
 
         <v-avatar
             class="hidden-sm-and-down"

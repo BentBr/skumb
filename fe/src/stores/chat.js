@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, nextTick, reactive, ref } from 'vue'
 import ChatMessage from './models/chatMessage'
 import Connection from './models/connection'
-import ConnectionStatus from './models/connectionStatus'
+import ConnectionStatusConstant from './models/connectionStatusConstant'
 import router from '../router'
 
 export const useChatStore = defineStore('chat', () => {
@@ -14,7 +14,8 @@ export const useChatStore = defineStore('chat', () => {
     const maxReconnectAttempts = 10
     let reconnectAttempts = 0
     let connections = reactive({ currentChat: [], otherSides: [] })
-    let connectionStatus = ref(ConnectionStatus.INACTIVE)
+    let connectionStatus = ref(ConnectionStatusConstant.INACTIVE)
+    const usernameEntered = ref(false)
 
     function getChatWsPath() {
         return `${import.meta.env.VITE_WS_PROTOCOL}://${import.meta.env.VITE_API_URL}/ws/${chat_uuid.value}`
@@ -43,7 +44,7 @@ export const useChatStore = defineStore('chat', () => {
 
         ws.value.onopen = () => {
             console.log('WebSocket connection opened')
-            sendConnection(user_id, ConnectionStatus.CONNECTED)
+            sendConnection(user_id, ConnectionStatusConstant.CONNECTED)
 
             reconnectAttempts = 0
         }
@@ -61,7 +62,7 @@ export const useChatStore = defineStore('chat', () => {
     function disconnect() {
         if (ws.value) {
             console.log('Sending disconnect message')
-            sendConnection(user_id, ConnectionStatus.DISCONNECTED)
+            sendConnection(user_id, ConnectionStatusConstant.DISCONNECTED)
 
             ws.value.onclose = null
             console.log('WebSocket connection closed')
@@ -74,8 +75,8 @@ export const useChatStore = defineStore('chat', () => {
             reconnectTimeout = null
         }
 
-        connectionStatus.value = ConnectionStatus.INACTIVE
-        messages.length = 0
+        connectionStatus.value = ConnectionStatusConstant.INACTIVE
+        messages = []
         user_id.value = ''
         chat_uuid.value = ''
     }
@@ -135,7 +136,8 @@ export const useChatStore = defineStore('chat', () => {
         // Don't push multiple times
         if (
             !target.some((conn) => conn.user_id === connection.user_id) &&
-            (connection.status === ConnectionStatus.CONNECTED || connection.status === ConnectionStatus.STAYING_ALIVE)
+            (connection.status === ConnectionStatusConstant.CONNECTED ||
+                connection.status === ConnectionStatusConstant.STAYING_ALIVE)
         ) {
             target.push(connection)
 
@@ -145,12 +147,12 @@ export const useChatStore = defineStore('chat', () => {
                 connection.user_id !== user_id.value &&
                 connections.otherSides.some((conn) => conn.user_id === connection.user_id)
             ) {
-                sendConnection(user_id, ConnectionStatus.STAYING_ALIVE)
+                sendConnection(user_id, ConnectionStatusConstant.STAYING_ALIVE)
                 console.log('sending staying alive')
             }
         } else if (
             target.some((conn) => conn.user_id === connection.user_id) &&
-            connection.status === ConnectionStatus.DISCONNECTED
+            connection.status === ConnectionStatusConstant.DISCONNECTED
         ) {
             const index = target.findIndex((conn) => conn.user_id === connection.user_id)
             if (index !== -1) {
@@ -160,15 +162,18 @@ export const useChatStore = defineStore('chat', () => {
 
         let activeCounter = 0
         connections.otherSides.forEach((c) => {
-            if (c.status === ConnectionStatus.CONNECTED || c.status === ConnectionStatus.STAYING_ALIVE) {
+            if (
+                c.status === ConnectionStatusConstant.CONNECTED ||
+                c.status === ConnectionStatusConstant.STAYING_ALIVE
+            ) {
                 activeCounter++
             }
         })
 
         if (activeCounter > 0) {
-            connectionStatus.value = ConnectionStatus.ACTIVE
+            connectionStatus.value = ConnectionStatusConstant.ACTIVE
         } else {
-            connectionStatus.value = ConnectionStatus.INACTIVE
+            connectionStatus.value = ConnectionStatusConstant.INACTIVE
         }
     }
 
@@ -210,7 +215,7 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     const isActive = computed(() => {
-        return connectionStatus.value === ConnectionStatus.ACTIVE
+        return connectionStatus.value === ConnectionStatusConstant.ACTIVE
     })
 
     return {
@@ -220,6 +225,7 @@ export const useChatStore = defineStore('chat', () => {
         connections,
         connectionStatus,
         isActive,
+        usernameEntered,
         connect,
         disconnect,
         sendMessage,

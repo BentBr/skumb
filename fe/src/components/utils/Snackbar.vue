@@ -1,15 +1,3 @@
-<template>
-    <v-container>
-        <v-snackbar
-            v-model="snackbar"
-            :timeout="3000"
-            top
-            right
-        >
-            {{ snackbarMessage }}
-        </v-snackbar>
-    </v-container>
-</template>
 <script>
     import { ref } from 'vue'
 
@@ -31,5 +19,18 @@
         },
     }
 </script>
+
+<template>
+    <v-container>
+        <v-snackbar
+            v-model="snackbar"
+            :timeout="3000"
+            top
+            right
+        >
+            {{ snackbarMessage }}
+        </v-snackbar>
+    </v-container>
+</template>
 
 <style scoped></style>

@@ -1,0 +1,26 @@
+{
+    "app": {
+        "translation": {
+            "short": {
+                "english": "EN",
+                "german": "DE"
+            },
+            "english": "English",
+            "german": "German"
+        }
+    },
+    "chat": {
+        "message": {
+            "new-created": "Created a new chat",
+            "copy-uri": "Link copied to clipboard",
+            "copy-uri-fail": "Failed to copy URI: ",
+            "active": "Your chat is active!",
+            "inactive": "Your chat is inactive. Share it!",
+            "empty": "Nothing here... yet. Start chatting :)"
+        },
+        "label": {
+            "username": "Enter your username first",
+            "message": "Message"
+        }
+    }
+}

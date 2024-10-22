@@ -1,13 +1,18 @@
 <script>
-    import { ref } from 'vue'
+    import { computed, ref } from 'vue'
     import { useChatStore } from '../../stores/chat'
     import Snackbar from '../utils/Snackbar.vue'
+    import { useI18n } from 'vue-i18n'
 
     export default {
         components: { Snackbar },
         setup() {
-            const snackbarMessage = 'Link copied to clipboard'
-            const snackbarFailMessage = 'Failed to copy URI: '
+            const { t } = useI18n()
+            const snackbarMessage = computed(() => t('chat.message.copy-uri'))
+            const snackbarFailMessage = computed(() => t('chat.message.copy-uri-fail'))
+            const chatActiveMessage = computed(() => t('chat.message.active'))
+            const chatInactiveMessage = computed(() => t('chat.message.inactive'))
+
             const snackbarCopyHintRef = ref(null)
             const chatStore = useChatStore()
 
@@ -19,8 +24,8 @@
                     navigator.clipboard
                         .writeText(uri)
                         .then(() => {
-                            console.log(snackbarMessage + ': ', uri)
-                            snackbarCopyHintRef.value.showSnackbar(snackbarMessage)
+                            console.log(snackbarMessage.value + ': ', uri)
+                            snackbarCopyHintRef.value.showSnackbar(snackbarMessage.value)
                         })
                         .catch((err) => {
                             console.error(snackbarFailMessage, err)
@@ -33,8 +38,8 @@
                     textArea.select()
                     try {
                         document.execCommand('copy')
-                        console.log(snackbarMessage + ': ', uri)
-                        snackbarCopyHintRef.value.showSnackbar(snackbarMessage)
+                        console.log(snackbarMessage.value + ': ', uri)
+                        snackbarCopyHintRef.value.showSnackbar(snackbarMessage.value)
                     } catch (err) {
                         console.error(snackbarFailMessage, err)
                     }
@@ -46,6 +51,8 @@
                 copyUri,
                 snackbarCopyHintRef,
                 chatStore,
+                chatActiveMessage,
+                chatInactiveMessage,
             }
         },
     }
@@ -66,7 +73,7 @@
                 mdi-circle-small
             </v-icon>
             <small>
-                Your chat is inactive. Share it!
+                {{ chatInactiveMessage }}
                 <v-icon @click="copyUri">mdi-share-variant</v-icon></small
             >
         </span>
@@ -77,7 +84,7 @@
             >
                 mdi-circle-small
             </v-icon>
-            <small> Your chat is active! </small>
+            <small>{{ chatActiveMessage }}</small>
         </span>
     </p>
 </template>
