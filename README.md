@@ -62,12 +62,13 @@ MISSING: Invalidate Cloudfront cache
 
 Todos:
 - pretty fe
-  - new chat (from existing)
-    (routing strategy?)
-  - container size mobile
+  - ~~new chat (from existing)
+    (routing strategy?)~~
+  - ~~container size mobile~~
   - content
   - colours + styling
   - ~~chat scrolls to bottom~~
+- new FE design + proper styles
 - CI for BE + FE (remember the base uri)
   - adding cloudfront invalidation
   - fixing pipelines in general
@@ -77,4 +78,5 @@ Todos:
     - 1:1
     - 1:1 stored
     - chat with email for account holder (entity)
-- Multi lang with i18n
+- ~~Multi lang with i18n~~
+- avoid clashing names (when both chats share same name)
