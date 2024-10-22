@@ -46,6 +46,7 @@
                     chatStore.fetchChatUuid()
                     snackbarUpdatedChatRef.value.showSnackbar(snackbarMessage)
                     chatStore.usernameEntered = false
+                    chatStore.messages = []
                 }
 
                 next()
