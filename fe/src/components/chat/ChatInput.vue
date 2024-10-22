@@ -22,20 +22,13 @@
                 { deep: true },
             )
 
-            const onUsernameBlur = () => {
-                if (chatStore.user_id.trim() !== '') {
-                    chatStore.usernameEntered = true
-                }
-
-                chatStore.connect()
-            }
-
             const onUsernameEnter = () => {
-                if (chatStore.user_id.trim() !== '') {
-                    chatStore.usernameEntered = true
-
-                    chatStore.connect()
+                if (chatStore.user_id.trim() === '') {
+                    return
                 }
+
+                chatStore.usernameEntered = true
+                chatStore.connect()
             }
 
             const send = () => {
@@ -65,7 +58,6 @@
                 chatWindow,
                 usernameLabel,
                 messageLabel,
-                onUsernameBlur,
                 onUsernameEnter,
                 send,
             }
@@ -87,7 +79,7 @@
                         :label="usernameLabel"
                         class="mt-4"
                         variant="underlined"
-                        @blur="onUsernameBlur"
+                        @blur="onUsernameEnter"
                         @keyup.enter="onUsernameEnter"
                     ></v-text-field>
                 </v-expand-transition>
