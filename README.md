@@ -52,13 +52,13 @@ Pushing: `docker push 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:late
 ## AWS manual deployment of new (frontend) assets (S3 static hosting)
 
 Build new assets \
-`docker compose run --rm -e VITE_API_URL=api.skumb.eu -e VITE_HTTP_PROTOCOL=https -e VITE_WS_PROTOCOL=wss node yarn build`
+`docker compose run --rm -e VITE_API_URL=api.skumb.eu -e VITE_URL=skumb.eu -e VITE_HTTP_PROTOCOL=https -e VITE_WS_PROTOCOL=wss node yarn build`
 
 Pushing to S3 \
 `aws s3 sync fe/dist s3://skumb.eu --profile rust`
 
-MISSING: Invalidate Cloudfront cache
-
+Invalidate Cloudfront cache \
+`aws cloudfront create-invalidation --distribution-id EJ5ATN9KG4YOI --paths "/*" --profile rust --no-cli-pager`
 
 Todos:
 - pretty fe
@@ -70,7 +70,7 @@ Todos:
   - ~~chat scrolls to bottom~~
 - new FE design + proper styles
 - CI for BE + FE (remember the base uri)
-  - adding cloudfront invalidation
+  - ~~adding cloudfront invalidation~~
   - fixing pipelines in general
 - Functions
   - auth with stored chats
