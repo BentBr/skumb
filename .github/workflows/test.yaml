@@ -23,9 +23,9 @@ jobs:
                 uses: actions/cache@v3
                 with:
                     path: ~/fe/node_modules
-                    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                    key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
                     restore-keys: |
-                        ${{ runner.os }}-node-
+                        ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
             -   name: Install dependencies
                 run: |
                     cd fe
