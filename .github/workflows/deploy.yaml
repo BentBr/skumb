@@ -47,11 +47,15 @@ jobs:
                     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                     AWS_REGION: eu-central-1
 
-            # Build the Docker image for ARM architecture
-            -   name: Build and push docker image
+            # Build the Docker image for ARM architecture (and using cache layer for docker build)
+            -   name: Build and push docker image to ECR
                 run: |
                     docker buildx create --use
-                    docker buildx build --platform linux/arm64 -t 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:latest . --push
+                    docker buildx build \
+                      --platform linux/arm64 \
+                      --cache-from=type=registry,ref=767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:cache \
+                      --cache-to=type=registry,ref=767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:cache,mode=max \
+                      -t 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:latest . --push
 
             # Deploy the backend to ECS
             -   name: Deploy to Amazon ECS
