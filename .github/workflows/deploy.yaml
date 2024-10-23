@@ -34,7 +34,7 @@ jobs:
                     AWS_REGION: eu-central-1
 
             # Build the Docker image for ARM architecture
-            -   name: Build Docker image
+            -   name: Build and push docker image
                 run: |
                     docker buildx create --use
                     docker buildx build --platform linux/arm64 -t skumb:latest . --push \
@@ -102,7 +102,7 @@ jobs:
             # Invalidate CloudFront (optional, for cache clearing)
             -   name: Invalidate CloudFront cache
                 run: |
-                    aws cloudfront create-invalidation --distribution-id EJ5ATN9KG4YOI --paths "/*"
+                    aws cloudfront create-invalidation --distribution-id EJ5ATN9KG4YOI --paths "/*" --no-cli-pager
                 env:
                     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
