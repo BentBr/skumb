@@ -99,6 +99,11 @@ jobs:
 
             # Build the frontend assets
             -   name: Build frontend
+                env:
+                    VITE_API_URL: api.skumb.eu
+                    VITE_URL: skumb.eu
+                    VITE_HTTP_PROTOCOL: https
+                    VITE_WS_PROTOCOL: wss
                 run: |
                     cd fe
                     yarn build
