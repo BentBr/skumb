@@ -86,10 +86,10 @@ jobs:
             -   name: Cache node_modules
                 uses: actions/cache@v3
                 with:
-                    path: node_modules
-                    key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+                    path: fe/node_modules
+                    key: ${{ runner.os }}-node-${{ hashFiles('fe/yarn.lock') }}
                     restore-keys: |
-                        ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+                        ${{ runner.os }}-node-${{ hashFiles('fe/yarn.lock') }}
 
             # Install dependencies
             -   name: Install dependencies
