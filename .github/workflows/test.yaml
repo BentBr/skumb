@@ -56,11 +56,6 @@ jobs:
                 with:
                     path: ~/.cargo/registry
                     key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-            -   name: Cache cargo index
-                uses: actions/cache@v3
-                with:
-                    path: ~/.cargo/git
-                    key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
             -   name: Cache cargo build
                 uses: actions/cache@v2
                 with:
