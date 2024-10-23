@@ -69,14 +69,15 @@ Todos:
   - colours + styling
   - ~~chat scrolls to bottom~~
 - new FE design + proper styles
-- CI for BE + FE (remember the base uri)
+- ~~CI for BE + FE (remember the base uri)~~
   - ~~adding cloudfront invalidation~~
-  - fixing pipelines in general
+  - ~~fixing pipelines in general~~
 - Functions
   - auth with stored chats
   - different chat levels
     - 1:1
     - 1:1 stored
     - chat with email for account holder (entity)
+  - Encryption!!!!
 - ~~Multi lang with i18n~~
 - avoid clashing names (when both chats share same name)
