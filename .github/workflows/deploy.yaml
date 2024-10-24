@@ -38,6 +38,15 @@ jobs:
                     path: target
                     key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
+            # Caching the docker layers
+            -   name: Cache Docker layers
+                uses: actions/cache@v3
+                with:
+                    path: /tmp/docker-cache
+                    key: ${{ runner.os }}-docker-cache-${{ hashFiles('**/Dockerfile') }}
+                    restore-keys: |
+                        ${{ runner.os }}-docker-cache-
+
             # Log in to AWS ECR
             -   name: Log in to Amazon ECR
                 id: login-ecr
@@ -53,8 +62,8 @@ jobs:
                     docker buildx create --use
                     docker buildx build \
                       --platform linux/arm64 \
-                      --cache-from=type=registry,ref=767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:cache \
-                      --cache-to=type=registry,ref=767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:cache,mode=max \
+                      --cache-from=type=local,src=/tmp/docker-cache \
+                      --cache-to=type=local,dest=/tmp/docker-cache,mode=max \
                       -t 767398008502.dkr.ecr.eu-central-1.amazonaws.com/skumb:latest . --push
 
             # Deploy the backend to ECS

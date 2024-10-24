@@ -69,9 +69,10 @@ Todos:
   - colours + styling
   - ~~chat scrolls to bottom~~
 - new FE design + proper styles
-- ~~CI for BE + FE (remember the base uri)~~
+- CI for BE + FE (remember the base uri)
   - ~~adding cloudfront invalidation~~
   - ~~fixing pipelines in general~~
+  - skip deploy FE / BE if no changes detected in cache
 - Functions
   - auth with stored chats
   - different chat levels
