@@ -83,6 +83,8 @@ Todos:
     - 1:1
     - 1:1 stored
     - chat with email for account holder (entity)
+  - random poll of participants and removal of those who don't respond
+  - 1:1 check if compromised
   - ~~Encryption!!!!~~
 - ~~Multi lang with i18n~~
 - ~~avoid clashing names (when both chats share same name)~~
