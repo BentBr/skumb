@@ -6,6 +6,6 @@ use uuid::Uuid;
 pub async fn uuid() -> HttpResponse {
     let uuid = Uuid::new_v4();
 
-    // Currently it's the same as for users, but it's a different module
+    // Currently it's the same as for chat, but it's a different module
     HttpResponse::Created().json(Item::new(Status::Success, "UUID created".to_string(), uuid))
 }

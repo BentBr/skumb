@@ -7,10 +7,12 @@ mod delete;
 mod edit;
 mod get;
 mod get_one;
+mod new;
 
 pub fn views_factory(app: &mut ServiceConfig) {
     app.service(
         scope("v1/user")
+            .route("uuid", get().to(new::uuid))
             .route("create", post().to(create::create))
             .route("get/{uuid}", get().to(get_one::get_one))
             .route("get", get().to(get::get))

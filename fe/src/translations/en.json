@@ -21,6 +21,11 @@
         "label": {
             "username": "Enter your username first",
             "message": "Message"
+        },
+        "security": {
+            "error": {
+                "decrypt": "Decryption failed"
+            }
         }
     }
 }

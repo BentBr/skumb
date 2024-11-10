@@ -73,21 +73,16 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
                             WsMessage::new(Data::ChatMessage(ChatMessage::new(
                                 uuid.to_string(),
                                 message.user_id,
-                                message.text,
-                                chrono::Utc::now().naive_utc().to_string(),
+                                message.cipher,
+                                message.iv,
+                                chrono::Utc::now().naive_utc(),
                             )))
                         }
-                        Data::Connection(connection) => {
-                            warn!("Response of connection message: {:?}", connection);
-                            //Todo: add other message types and use them here
-                            WsMessage::new(Data::Connection(connection))
-                        }
-                        Data::Ping(_ping) => {
-                            //Todo: add other message types
-
-                            warn!("PING: WebSocket error during parsing of message: {text}");
-
-                            WsMessage::new(Data::Ping(Ping::new(Knock::Pong)))
+                        Data::Connection(connection) => WsMessage::new(Data::Connection(connection)),
+                        Data::Ping(_ping) => WsMessage::new(Data::Ping(Ping::new(Knock::Pong))),
+                        Data::GroupKey(group_key) => {
+                            // Todo: currently only relaying the message
+                            WsMessage::new(Data::GroupKey(group_key))
                         }
                     };
 
@@ -97,8 +92,11 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
                         chat_uuid: self.chat_uuid,
                         message: response_message.clone(),
                     });
-
-                    info!("Did send following message to chat room: {:?}", response_message);
+                    // Todo: remove this verbosity
+                    info!(
+                        "Did send following message to chat room {:?}: {:?}",
+                        self.chat_uuid, response_message
+                    );
                 } else {
                     warn!("WebSocket error during parsing of message: {text}");
                 }

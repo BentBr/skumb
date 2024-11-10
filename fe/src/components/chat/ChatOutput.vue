@@ -1,6 +1,7 @@
 <script>
     import { nextTick, ref, watch } from 'vue'
     import { useChatStore } from '../../stores/chat'
+    import { de } from 'vuetify/locale'
 
     export default {
         setup() {
@@ -28,7 +29,6 @@
             const scrollToBottom = () => {
                 nextTick(() => {
                     if (chatWindow.value) {
-                        console.log(chatWindow.value.scrollTop)
                         chatWindow.value.scrollTop = chatWindow.value.scrollHeight
                     }
                 })
@@ -42,6 +42,11 @@
                 chatWindow,
                 createDateString,
             }
+        },
+        computed: {
+            de() {
+                return de
+            },
         },
     }
 </script>
@@ -57,13 +62,13 @@
         >
             <div
                 v-for="msg in chatStore.messages"
-                :key="msg.user_id + msg.text"
+                :key="msg.user_id + msg.cipher"
                 class="chat-message text-grey-darken-4"
             >
                 <small>{{ createDateString(msg.message_sent_at) }}</small
                 >&nbsp;
-                <strong>{{ msg.user_id }}:</strong>
-                {{ msg.text }}
+                <strong>{{ chatStore.getUserNameForId(msg.user_id) }}:</strong>
+                {{ msg.cipher }}
             </div>
         </transition-group>
     </div>

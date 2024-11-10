@@ -21,6 +21,11 @@
         "label": {
             "username": "Gebe zuerst deinen Nutzernamen ein",
             "message": "Nachricht"
+        },
+        "security": {
+            "error": {
+                "decrypt": "Entschlüsselung fehlgeschlagen"
+            }
         }
     }
 }

@@ -25,9 +25,9 @@
 
             onMounted(() => {
                 if (chat_uuid.value) {
-                    chatStore.chat_uuid = chat_uuid.value
+                    chatStore.chatId = chat_uuid.value
                 }
-                if (!chatStore.chat_uuid) {
+                if (!chatStore.chatId) {
                     chatStore.fetchChatUuid()
                     chatStore.usernameEntered = false
                 }

@@ -23,7 +23,7 @@
             )
 
             const onUsernameEnter = () => {
-                if (chatStore.user_id.trim() === '') {
+                if (chatStore.userName.trim() === '') {
                     return
                 }
 
@@ -32,10 +32,10 @@
             }
 
             const send = () => {
-                if (text.value.trim() === '' || chatStore.user_id.trim() === '') {
+                if (text.value.trim() === '' || chatStore.userName.trim() === '') {
                     return
                 }
-                chatStore.sendMessage(chatStore.user_id, text.value)
+                chatStore.sendMessageToUser(text.value)
 
                 text.value = ''
                 if (!chatStore.usernameEntered) {
@@ -75,7 +75,7 @@
                 <v-expand-transition>
                     <v-text-field
                         v-if="!chatStore.usernameEntered"
-                        v-model="chatStore.user_id"
+                        v-model="chatStore.userName"
                         :label="usernameLabel"
                         class="mt-4"
                         variant="underlined"
