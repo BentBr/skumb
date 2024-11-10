@@ -65,7 +65,10 @@ Todos:
   - ~~new chat (from existing)
     (routing strategy?)~~
   - ~~container size mobile~~
-  - content
+  - content (first idea)
+    - content pages 
+    - footer
+    - contact
   - colours + styling
   - ~~chat scrolls to bottom~~
 - new FE design + proper styles
@@ -73,12 +76,30 @@ Todos:
   - ~~adding cloudfront invalidation~~
   - ~~fixing pipelines in general~~
   - skip deploy FE / BE if no changes detected in cache
+  - better caching strategies
 - Functions
   - auth with stored chats
   - different chat levels
     - 1:1
     - 1:1 stored
     - chat with email for account holder (entity)
-  - Encryption!!!!
+  - ~~Encryption!!!!~~
 - ~~Multi lang with i18n~~
-- avoid clashing names (when both chats share same name)
+- ~~avoid clashing names (when both chats share same name)~~
+
+
+## Certificates
+
+`openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout skumb.docker.key -out skumb.docker.crt -subj "/CN=skumb.docker"`
+
+Put the certificates in the `~/.dinghy/certs` folder and run the following command to (re)start the proxy:
+
+```bash
+docker run -d --restart=always \
+-v /var/run/docker.sock:/tmp/docker.sock:ro \
+-v ~/.dinghy/certs:/etc/nginx/certs \
+-p 80:80 -p 443:443 -p 19322:19322/udp \
+-e CONTAINER_NAME=http-proxy \
+--name http-proxy \
+codekitchen/dinghy-http-proxy
+```
