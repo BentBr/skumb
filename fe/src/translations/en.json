@@ -27,5 +27,38 @@
                 "decrypt": "Decryption failed"
             }
         }
+    },
+    "content": {
+        "welcome": {
+            "skumb": {
+                "title": "Skumb",
+                "p1": "Skumb is a simple, anonymous, and secure chat platform with a focus on privacy.",
+                "p2": "Create a new chat instantly without registration and share the link with friends, colleagues, or family.",
+                "p3": "Each chat is end-to-end encrypted using reliable, proven algorithms.",
+                "p4": "This is a volatile chat — messages aren’t stored anywhere. Closing or refreshing the page erases all messages (current anonymous version)."
+            },
+            "anonymous-chat": {
+                "title": "Anonymous chat",
+                "p1": "Need to share a private key, password, or other sensitive information without leaving a trace? Use",
+                "p2": "No questions, no storage, no registration required. Once a chat ends, your messages are gone. No turning back."
+            },
+            "whistle-blowing": {
+                "title": "Whistleblowing (coming soon)",
+                "p1": "For organizations or journalists looking for a secure, anonymous way to communicate, Skumb offers a safe contact point.",
+                "p2": "Receive first-hand information on breaches, leaks, or other sensitive topics in a secure environment that only you control but respects the privacy of your sources."
+            },
+            "surveillance": {
+                "title": "Chat without <span style=\"text-decoration: line-through;\">remorse</span> surveillance (coming soon)",
+                "p1": "Want a secure, modern chat experience free from data tracking and surveillance?",
+                "p2": "Avoid supporting data collection and retention policies that infringe on privacy. Use Skumb.",
+                "p3": "Protect privacy, security, anonymity, and the human rights to dignity and freedom of speech.",
+                "p4": "Try Skumb"
+            },
+            "support": {
+                "title": "Made with love in Rust and Vue (support coming soon)",
+                "p1": "As an independent project, we’re always open to support and shared love.",
+                "p2": "Become a supporter"
+            }
+        }
     }
 }

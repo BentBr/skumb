@@ -259,7 +259,7 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     async function handleChatMessage(message) {
-        const decryptedMessageText =  await decryptStringFromBase64Representation(
+        const decryptedMessageText = await decryptStringFromBase64Representation(
             groupKeyDerivedSymmetric.value,
             message.data.ChatMessage.cipher,
             message.data.ChatMessage.iv,

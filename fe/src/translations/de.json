@@ -27,5 +27,39 @@
                 "decrypt": "Entschlüsselung fehlgeschlagen"
             }
         }
+    },
+    "content": {
+        "welcome": {
+            "skumb": {
+                "title": "Skumb",
+                "p1": "Skumb ist eine einfache, anonyme und sichere Chat-Plattform mit einem Fokus auf Privatsphäre.",
+                "p2": "Erstelle ohne Registrierung einen neuen Chat und teile den Link mit Freunden, Kollegen oder Familie.",
+                "p3": "Jeder Chat ist durch Ende-zu-Ende-Verschlüsselung mit bewährten Algorithmen geschützt.",
+                "p4": "Dieser Chat ist flüchtig — Nachrichten werden nirgendwo gespeichert. Durch das Schließen oder Aktualisieren der Seite werden alle Nachrichten gelöscht (aktuelle anonyme Version)."
+            },
+            "anonymous-chat": {
+                "title": "Anonymer Chat",
+                "p1": "Möchtest du einen privaten Schlüssel, ein Passwort oder andere sensible Informationen teilen, ohne eine Spur zu hinterlassen? Nutze",
+                "p2": "Keine Fragen, keine Speicherung, keine Registrierung erforderlich. Sobald ein Chat endet, sind deine Nachrichten verschwunden. Kein Zurück."
+            },
+            "whistle-blowing": {
+                "title": "Whistleblowing (kommt bald)",
+                "p1": "Für Organisationen oder Journalisten, die eine sichere, anonyme Kommunikation suchen, bietet Skumb einen geschützten Kontaktpunkt.",
+                "p2": "Erhalte Informationen über Verstöße, Leaks oder andere sensible Themen in einer sicheren Umgebung, die nur du kontrollierst, aber die Privatsphäre deiner Quellen respektiert."
+            },
+            "surveillance": {
+                "title": "Chat ohne <span style=\"text-decoration: line-through;\">Reue</span> Überwachung (kommt bald)",
+                "p1": "Willst du eine sichere, moderne Chat-Erfahrung ohne Datenerfassung und Überwachung?",
+                "p2": "Unterstütze keine Datensammlungs- und Aufbewahrungsrichtlinien, die die Privatsphäre verletzen. Nutze Skumb.",
+                "p3": "Schütze Privatsphäre, Sicherheit, Anonymität und die Menschenrechte auf Würde und freie Meinungsäußerung.",
+                "p4": "Probiere Skumb"
+            },
+            "support": {
+                "title": "Mit Liebe zu Rust und Vue gemacht (Unterstützung kommt bald)",
+                "p1": "Als unabhängiges Projekt freuen wir uns über Unterstützung und gemeinsame Begeisterung.",
+                "p2": "Unterstützer werden"
+            }
+        }
     }
+
 }
