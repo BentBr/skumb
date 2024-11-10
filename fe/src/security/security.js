@@ -25,7 +25,7 @@ export async function deriveSymmetricKey(privateKey, publicKey) {
     )
 }
 
-export async function encryptMessageBase64Representation(key, message) {
+export async function encryptStringBase64Representation(key, message) {
     const enc = new TextEncoder()
     const iv = crypto.getRandomValues(new Uint8Array(12)) // 96-bit IV for AES-GCM
 
@@ -38,7 +38,7 @@ export async function encryptMessageBase64Representation(key, message) {
     return { cipher: base64Ciphertext, iv: base64Iv }
 }
 
-export async function decryptMessageFromBase64Representation(key, base64Ciphertext, base64Iv, t) {
+export async function decryptStringFromBase64Representation(key, base64Ciphertext, base64Iv, t) {
     // Convert base64 encoded data back to Uint8Array
     const ciphertext = base64ToUint8Array(base64Ciphertext)
     const iv = base64ToUint8Array(base64Iv)

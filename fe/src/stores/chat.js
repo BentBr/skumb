@@ -5,9 +5,9 @@ import Connection from './models/connection'
 import ConnectionStatusConstant from './models/connectionStatusConstant'
 import router from '../router'
 import {
-    decryptMessageFromBase64Representation,
+    decryptStringFromBase64Representation,
     deriveSymmetricKey,
-    encryptMessageBase64Representation,
+    encryptStringBase64Representation,
     exportKeyToJwk,
     exportSymmetricKeyToRaw,
     importSymmetricKeyFromRaw,
@@ -130,7 +130,7 @@ export const useChatStore = defineStore('chat', () => {
 
     async function sendMessageToUser(text) {
         if (ws.value && ws.value.readyState === WebSocket.OPEN) {
-            const { cipher, iv } = await encryptMessageBase64Representation(groupKeyDerivedSymmetric.value, text)
+            const { cipher, iv } = await encryptStringBase64Representation(groupKeyDerivedSymmetric.value, text)
             const chatMessage = new ChatMessage(userId.value, cipher, iv)
             const wsMessage = { data: { ChatMessage: chatMessage } }
 
@@ -161,7 +161,7 @@ export const useChatStore = defineStore('chat', () => {
                 return
             }
             const derivedEncryptionKey = await deriveSymmetricKey(privateKey.value, targetUser.public_key)
-            const encryptedGroupKey = await encryptMessageBase64Representation(
+            const encryptedGroupKey = await encryptStringBase64Representation(
                 derivedEncryptionKey,
                 await exportSymmetricKeyToRaw(groupKeyDerivedSymmetric.value),
             )
@@ -259,10 +259,15 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     async function handleChatMessage(message) {
-        const decryptedMessage = await decryptMessage(message.data.ChatMessage)
+        const decryptedMessageText =  await decryptStringFromBase64Representation(
+            groupKeyDerivedSymmetric.value,
+            message.data.ChatMessage.cipher,
+            message.data.ChatMessage.iv,
+            t,
+        )
         const chatMessage = new ChatMessage(
             message.data.ChatMessage.user_id,
-            decryptedMessage,
+            decryptedMessageText,
             message.data.ChatMessage.iv,
             message.data.ChatMessage.uuid,
             message.data.ChatMessage.message_sent_at,
@@ -313,7 +318,7 @@ export const useChatStore = defineStore('chat', () => {
         }
 
         const derivedDecryptionKey = await deriveSymmetricKey(privateKey.value, publicKeyConnection.public_key)
-        const decryptedKey = await decryptMessageFromBase64Representation(
+        const decryptedKey = await decryptStringFromBase64Representation(
             derivedDecryptionKey,
             message.data.GroupKey.encrypted_key,
             message.data.GroupKey.iv,
@@ -351,15 +356,6 @@ export const useChatStore = defineStore('chat', () => {
         publicKey.value = keyPair.publicKey
     }
 
-    const decryptMessage = async (message) => {
-        return await decryptMessageFromBase64Representation(
-            groupKeyDerivedSymmetric.value,
-            message.cipher,
-            message.iv,
-            t,
-        )
-    }
-
     function getUserNameForId(userId) {
         const connection =
             connections.currentChat.find((conn) => conn.user_id === userId) ||
@@ -388,8 +384,8 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     async function createGroupKey() {
-        console.log('creating new group key')
         const key = await generateKeyPair()
+
         groupKeyCreationDate.value = new Date().toISOString().split('.')[0]
         groupKeyDerivedSymmetric.value = await deriveSymmetricKey(key.privateKey, key.publicKey)
     }
