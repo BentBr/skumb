@@ -20,7 +20,7 @@ RUN cargo build --release
 FROM ubuntu:24.04
 
 # Install necessary runtime dependencies
-RUN apt-get update && apt-get install -y libpq-dev ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libpq-dev ca-certificates curl && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /usr/local/bin
