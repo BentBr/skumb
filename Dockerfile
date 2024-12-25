@@ -31,7 +31,7 @@ COPY --from=builder /usr/src/app/target/release/skumb .
 # Expose the port for the webserver and websocket
 EXPOSE 9123
 
-# Excluded for now
+# Excluded for now - ECS has it's own and doesn't use this
 # HEALTHCHECK CMD curl -f http://localhost:9123/health || exit 1
 
 # Run the binary

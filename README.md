@@ -81,8 +81,9 @@ Todos:
 - CI for BE + FE (remember the base uri)
   - ~~adding cloudfront invalidation~~
   - ~~fixing pipelines in general~~
-  - skip deploy FE / BE if no changes detected in cache
-  - better caching strategies
+  - ~~skip deploy FE / BE if no changes detected in cache~~
+  - ~~better caching strategies~~
+  - ~~working health checks during deploy~~
 - Functions
   - auth with stored chats
   - different chat levels
