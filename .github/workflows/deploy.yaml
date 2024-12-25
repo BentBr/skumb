@@ -29,14 +29,14 @@ jobs:
                 uses: actions/cache@v3
                 with:
                     path: ~/.cargo/registry
-                    key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+                    key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}
 
             # Caching cargo build
             -   name: Cache cargo build
                 uses: actions/cache@v3
                 with:
                     path: target
-                    key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+                    key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}
 
             # Caching the docker layers
             -   name: Cache Docker layers
