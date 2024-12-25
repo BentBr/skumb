@@ -67,6 +67,12 @@ Todos:
   - ~~container size mobile~~
   - content (first idea)
     - content pages 
+      - use cases
+        - developers exchanging private keys
+        - journalists exchanging sensitive information about sources
+        - journalists providing a secure way for sources to reach out (whistleblowing, point of contact)
+        - companies providing a secure way for staff to reach out (whistleblowing, point of contact)
+        - companies providing a secure way for researchers to reach out (security, external audits, bug bounties, point of contact)
     - footer
     - contact
   - colours + styling
